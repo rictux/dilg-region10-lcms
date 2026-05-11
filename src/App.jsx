@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import DashboardLayout from './components/layout/DashboardLayout'
 import Overview from './pages/Overview'
+import ASFMonitoringDashboard from './pages/ASFMonitoringDashboard'
 import BFDPDashboard from './pages/BFDPDashboard'
 import LTRPPDashboard from './pages/LTRPPDashboard'
 import RoadSafetyDashboard from './pages/RoadSafetyDashboard'
@@ -15,6 +16,7 @@ export default function App() {
   const [roadSafetyInitialFilters, setRoadSafetyInitialFilters] = useState(null)
   const [skfpdInitialFilters, setSkfpdInitialFilters] = useState(null)
   const [sglgInitialFilters, setSglgInitialFilters] = useState(null)
+  const [asfMonitoringInitialFilters, setAsfMonitoringInitialFilters] = useState(null)
 
   const handleNavigate = (page, options = {}) => {
     if (page === 'bfdp' && options.filters) {
@@ -35,6 +37,10 @@ export default function App() {
 
     if (page === 'sglg' && options.filters) {
       setSglgInitialFilters(options.filters)
+    }
+
+    if (page === 'asf-monitoring' && options.filters) {
+      setAsfMonitoringInitialFilters(options.filters)
     }
 
     setActivePage(page)
@@ -59,6 +65,10 @@ export default function App() {
 
     if (activePage === 'sglg') {
       return <SGLGDashboard initialFilters={sglgInitialFilters} />
+    }
+
+    if (activePage === 'asf-monitoring') {
+      return <ASFMonitoringDashboard initialFilters={asfMonitoringInitialFilters} />
     }
 
     if (activePage === 'future') {

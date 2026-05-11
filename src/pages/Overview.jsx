@@ -3,6 +3,7 @@ import { Badge, Card } from '@tremor/react'
 import { useQueryClient } from '@tanstack/react-query'
 import SummaryCard from '../components/cards/SummaryCard'
 import LocationFilters from '../components/filters/LocationFilters'
+import { useASFMonitoringGeoOptions, useOverviewASFMonitoringStats } from '../hooks/useASFMonitoringQueries'
 import { useGeoOptions, useOverviewBFDPStats, useOverviewLocationStats } from '../hooks/useBFDPQueries'
 import { useOverviewLTRPPStats } from '../hooks/useLTRPPQueries'
 import { useOverviewRoadSafetyStats } from '../hooks/useRoadSafetyQueries'
@@ -80,6 +81,15 @@ const reportModules = [
     periods: ['quarter'],
   },
   {
+    id: 'asf-monitoring',
+    title: 'ASF Monitoring',
+    description: 'African Swine Fever monthly monitoring indicators',
+    frequency: 'Monthly',
+    status: 'Live',
+    color: 'emerald',
+    periods: ['month'],
+  },
+  {
     id: 'future',
     title: 'Other',
     description: 'Reserved for future schemas',
@@ -142,6 +152,15 @@ function getRoadSafetyFilterPayload(filters) {
     cityMunName: filters.cityMunName,
     year: filters.year,
     quarter: filters.quarter,
+  }
+}
+
+function getASFMonitoringFilterPayload(filters) {
+  return {
+    provinceHuc: filters.provinceHuc,
+    cityMunName: filters.cityMunName,
+    year: filters.year,
+    month: filters.month,
   }
 }
 
@@ -328,6 +347,15 @@ export default function Overview({ onNavigate }) {
     }),
     [filters.year, filters.quarter, filters.provinceHuc, filters.cityMunName],
   )
+  const asfMonitoringStatsFilters = useMemo(
+    () => ({
+      year: filters.year,
+      month: filters.month,
+      province: filters.provinceHuc,
+      city: filters.cityMunName,
+    }),
+    [filters.year, filters.month, filters.provinceHuc, filters.cityMunName],
+  )
   const sglgStatsFilters = useMemo(
     () => ({
       year: filters.year,
@@ -343,9 +371,11 @@ export default function Overview({ onNavigate }) {
   const isSKFPDApplicable = !filters.month
   const isLTRPPApplicable = !filters.month
   const isRoadSafetyApplicable = !filters.month && !filters.barangayName && Boolean(filters.year && filters.quarter)
+  const isASFMonitoringApplicable = !filters.quarter && !filters.barangayName && Boolean(filters.year && filters.month)
   const isSGLGApplicable = !filters.month && !filters.quarter && !filters.barangayName
 
   const geoOptionsQuery = useGeoOptions()
+  const asfMonitoringGeoOptionsQuery = useASFMonitoringGeoOptions()
   const locationStatsQuery = useOverviewLocationStats(locationStatsFilters)
   const bfdpStatsQuery = useOverviewBFDPStats(bfdpStatsFilters, {
     enabled: isBFDPApplicable,
@@ -363,6 +393,10 @@ export default function Overview({ onNavigate }) {
     enabled: isRoadSafetyApplicable,
     requireLocation: false,
   })
+  const asfMonitoringStatsQuery = useOverviewASFMonitoringStats(asfMonitoringStatsFilters, {
+    enabled: isASFMonitoringApplicable,
+    requireLocation: false,
+  })
   const sglgStatsQuery = useSGLGDashboard(sglgStatsFilters, {
     enabled: isSGLGApplicable,
   })
@@ -374,17 +408,26 @@ export default function Overview({ onNavigate }) {
 
     return {
       ...geoOptionsQuery.data,
-      years: [...new Set([2026, 2024, ...(geoOptionsQuery.data.years ?? [])])].sort((a, b) => b - a),
+      years: [
+        ...new Set([
+          2026,
+          2024,
+          ...(geoOptionsQuery.data.years ?? []),
+          ...(asfMonitoringGeoOptionsQuery.data?.years ?? []),
+        ]),
+      ].sort((a, b) => b - a),
     }
-  }, [geoOptionsQuery.data])
+  }, [asfMonitoringGeoOptionsQuery.data?.years, geoOptionsQuery.data])
 
   const handleRefresh = () => {
     queryClient.invalidateQueries({ queryKey: ['geo-options'] })
+    queryClient.invalidateQueries({ queryKey: ['asf-monitoring-geo-options'] })
     queryClient.invalidateQueries({ queryKey: ['overview-location-stats'] })
     queryClient.invalidateQueries({ queryKey: ['overview-bfdp-stats'] })
     queryClient.invalidateQueries({ queryKey: ['overview-skfpd-stats'] })
     queryClient.invalidateQueries({ queryKey: ['overview-ltrpp-stats'] })
     queryClient.invalidateQueries({ queryKey: ['overview-road-safety-stats'] })
+    queryClient.invalidateQueries({ queryKey: ['overview-asf-monitoring-stats'] })
     queryClient.invalidateQueries({ queryKey: ['sglg-dashboard'] })
   }
 
@@ -400,10 +443,12 @@ export default function Overview({ onNavigate }) {
         isRefreshing={
           geoOptionsQuery.isFetching ||
           locationStatsQuery.isFetching ||
+          asfMonitoringGeoOptionsQuery.isFetching ||
           bfdpStatsQuery.isFetching ||
           skfpdStatsQuery.isFetching ||
           ltrppStatsQuery.isFetching ||
           roadSafetyStatsQuery.isFetching ||
+          asfMonitoringStatsQuery.isFetching ||
           sglgStatsQuery.isFetching
         }
         includeMonth
@@ -447,7 +492,7 @@ export default function Overview({ onNavigate }) {
                 </div>
                 <Badge color={reportState.color}>{reportState.label}</Badge>
               </div>
-              {report.id === 'bfdp' || report.id === 'skfpd' || report.id === 'ltrpp' || report.id === 'road-safety' ? (
+              {report.id === 'bfdp' || report.id === 'skfpd' || report.id === 'ltrpp' || report.id === 'road-safety' || report.id === 'asf-monitoring' ? (
                 <QuarterlyComplianceCardStats
                   stats={
                     report.id === 'bfdp'
@@ -456,7 +501,9 @@ export default function Overview({ onNavigate }) {
                         ? skfpdStatsQuery.data
                         : report.id === 'ltrpp'
                           ? ltrppStatsQuery.data
-                          : roadSafetyStatsQuery.data
+                          : report.id === 'road-safety'
+                            ? roadSafetyStatsQuery.data
+                            : asfMonitoringStatsQuery.data
                   }
                   isLoading={
                     report.id === 'bfdp'
@@ -465,18 +512,24 @@ export default function Overview({ onNavigate }) {
                         ? skfpdStatsQuery.isLoading
                         : report.id === 'ltrpp'
                           ? ltrppStatsQuery.isLoading
-                          : roadSafetyStatsQuery.isLoading
+                          : report.id === 'road-safety'
+                            ? roadSafetyStatsQuery.isLoading
+                            : asfMonitoringStatsQuery.isLoading
                   }
                   isApplicable={
                     report.id === 'ltrpp'
                       ? reportState.isApplicable && isLTRPPApplicable
                       : report.id === 'road-safety'
                         ? reportState.isApplicable && isRoadSafetyApplicable
+                        : report.id === 'asf-monitoring'
+                          ? reportState.isApplicable && isASFMonitoringApplicable
                       : reportState.isApplicable
                   }
                   notApplicableMessage={
                     report.id === 'road-safety'
                       ? 'Select a year and quarter to load this quarterly report.'
+                      : report.id === 'asf-monitoring'
+                        ? 'Select a year and month to load this monthly report.'
                       : 'Not applicable for Month filter.'
                   }
                 />
@@ -521,6 +574,16 @@ export default function Overview({ onNavigate }) {
                     type="button"
                     onClick={() => onNavigate('road-safety', { filters: getRoadSafetyFilterPayload(filters) })}
                     disabled={!reportState.isApplicable || !isRoadSafetyApplicable}
+                    className="rounded-lg bg-civic-700 px-4 py-2 text-sm font-semibold text-white hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-slate-300"
+                  >
+                    Open
+                  </button>
+                ) : null}
+                {report.id === 'asf-monitoring' ? (
+                  <button
+                    type="button"
+                    onClick={() => onNavigate('asf-monitoring', { filters: getASFMonitoringFilterPayload(filters) })}
+                    disabled={!reportState.isApplicable || !isASFMonitoringApplicable}
                     className="rounded-lg bg-civic-700 px-4 py-2 text-sm font-semibold text-white hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-slate-300"
                   >
                     Open
