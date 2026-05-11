@@ -3,6 +3,10 @@
 Changes are generated from the Git commit log and grouped by commit date.
 
 
+
+## 2026-05-11
+
+- `5cc0861` feat: Add ASF Monitoring Dashboard and related components
 ## 2026-05-07
 
 - `5167f7a` feat: add Road Safety Dashboard with charts and tables for road safety compliance data
