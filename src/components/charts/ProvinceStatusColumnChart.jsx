@@ -67,7 +67,7 @@ export default function ProvinceStatusColumnChart({
   const options = {
     chart: {
       toolbar: { show: false },
-      fontFamily: 'Aptos, Segoe UI, sans-serif',
+      fontFamily: 'inherit',
       events: {
         dataPointSelection: (_event, _chartContext, config) => {
           const status = statuses[config.seriesIndex]
@@ -88,15 +88,17 @@ export default function ProvinceStatusColumnChart({
     colors,
     legend: {
       position: 'bottom',
-      fontSize: '13px',
-      markers: { width: 10, height: 10, radius: 10 },
+      fontSize: '12px',
+      fontWeight: 500,
+      markers: { width: 8, height: 8, radius: 10 },
+      itemMargin: { horizontal: 10, vertical: 4 },
     },
     grid: {
       show: false,
     },
     plotOptions: {
       bar: {
-        borderRadius: 4,
+        borderRadius: 3,
         columnWidth: '62%',
         dataLabels: {
           position: 'top',
@@ -107,15 +109,17 @@ export default function ProvinceStatusColumnChart({
       enabled: true,
       formatter: (value) => (value > 0 ? value.toLocaleString() : ''),
       offsetY: -18,
-      style: { colors: ['#0f172a'], fontSize: '11px', fontWeight: 700 },
+      style: { colors: ['#18181b'], fontSize: '11px', fontWeight: 600 },
     },
     xaxis: {
       categories: locations,
       labels: {
         rotate: -35,
         trim: true,
-        style: { colors: '#475569', fontSize: '12px' },
+        style: { colors: '#71717a', fontSize: '11px' },
       },
+      axisBorder: { color: '#e4e4e7' },
+      axisTicks: { color: '#e4e4e7' },
     },
     yaxis: {
       min: 0,
@@ -136,10 +140,10 @@ export default function ProvinceStatusColumnChart({
   }
 
   return (
-    <Card className="border border-slate-200 bg-white shadow-panel">
+    <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-base font-semibold text-slate-950">{title}</h3>
+          <h3 className="text-sm font-semibold tracking-tightish text-ink">{title}</h3>
           {selectedFilter?.locationLabel && selectedFilter?.statusLabel ? (
             <p className="mt-1 text-xs font-medium text-civic-700">
               Filtering records below by {selectedFilter.statusLabel} in {selectedFilter.locationLabel}
@@ -150,7 +154,7 @@ export default function ProvinceStatusColumnChart({
           <button
             type="button"
             onClick={() => onFilterSelect?.({ province: '', city: '', locationLabel: '', status: '', statusLabel: '' })}
-            className="rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+            className="rounded-md border border-line px-2.5 py-1 text-xs font-medium text-ink-soft transition hover:bg-zinc-50 hover:text-ink"
           >
             Clear
           </button>

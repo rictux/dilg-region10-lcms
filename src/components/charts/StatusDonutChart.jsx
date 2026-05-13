@@ -46,7 +46,7 @@ export default function StatusDonutChart({ statusCounts, selectedStatus, onStatu
   const options = {
     chart: {
       toolbar: { show: false },
-      fontFamily: 'Aptos, Segoe UI, sans-serif',
+      fontFamily: 'inherit',
       events: {
         dataPointSelection: (_event, _chartContext, config) => {
           const status = labels[config.dataPointIndex]
@@ -59,26 +59,34 @@ export default function StatusDonutChart({ statusCounts, selectedStatus, onStatu
     },
     labels,
     colors,
+    stroke: { width: 2, colors: ['#ffffff'] },
     legend: {
       position: 'bottom',
-      fontSize: '13px',
-      markers: { width: 10, height: 10, radius: 10 },
+      fontSize: '12px',
+      fontWeight: 500,
+      markers: { width: 8, height: 8, radius: 10 },
+      itemMargin: { horizontal: 10, vertical: 4 },
     },
     dataLabels: {
       enabled: true,
       formatter: (value) => `${value.toFixed(1)}%`,
+      style: { fontSize: '11px', fontWeight: 600 },
+      dropShadow: { enabled: false },
     },
     plotOptions: {
       pie: {
         donut: {
-          size: '68%',
+          size: '70%',
           labels: {
             show: true,
             total: {
               show: true,
               label: 'Records',
-              color: '#475569',
+              color: '#71717a',
+              fontSize: '11px',
+              fontWeight: 500,
             },
+            value: { color: '#18181b', fontSize: '20px', fontWeight: 600 },
           },
         },
       },
@@ -86,10 +94,10 @@ export default function StatusDonutChart({ statusCounts, selectedStatus, onStatu
   }
 
   return (
-    <Card className="border border-slate-200 bg-white shadow-panel">
+    <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-base font-semibold text-slate-950">Status Distribution</h3>
+          <h3 className="text-sm font-semibold tracking-tightish text-ink">Status Distribution</h3>
           {selectedStatus ? (
             <p className="mt-1 text-xs font-medium text-civic-700">
               Filtering table by {selectedStatus}
@@ -100,7 +108,7 @@ export default function StatusDonutChart({ statusCounts, selectedStatus, onStatu
           <button
             type="button"
             onClick={() => onStatusSelect?.('')}
-            className="rounded-lg border border-slate-300 px-2.5 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+            className="rounded-md border border-line px-2.5 py-1 text-xs font-medium text-ink-soft transition hover:bg-zinc-50 hover:text-ink"
           >
             Clear
           </button>

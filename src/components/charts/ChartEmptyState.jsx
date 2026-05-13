@@ -2,13 +2,13 @@ import { Card } from '@tremor/react'
 
 export default function ChartEmptyState({ title, message = 'No chart data available.' }) {
   return (
-    <Card className="flex min-h-80 flex-col justify-center border border-slate-200 bg-white text-center shadow-panel">
+    <Card className="flex min-h-80 flex-col justify-center rounded-xl border border-line bg-white text-center shadow-none ring-0">
       {typeof title === 'string' ? (
-        <h3 className="text-base font-semibold text-slate-950">{title}</h3>
+        <h3 className="text-sm font-semibold tracking-tightish text-ink">{title}</h3>
       ) : (
         <div className="flex justify-center">{title}</div>
       )}
-      <p className="mt-2 text-sm text-slate-500">{message}</p>
+      <p className="mt-2 text-sm text-ink-muted">{message}</p>
     </Card>
   )
 }

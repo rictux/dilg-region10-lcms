@@ -35,27 +35,27 @@ const ltrppStatusSeries = [
 
 function LoadingState() {
   return (
-    <Card className="border border-slate-200 bg-white p-8 text-center shadow-panel">
-      <div className="text-sm font-semibold text-civic-700">Loading LPTRPP dashboard...</div>
-      <p className="mt-2 text-sm text-slate-500">Fetching route plan preparation records.</p>
+    <Card className="rounded-xl border border-line bg-white p-10 text-center shadow-none ring-0">
+      <div className="text-[13px] font-semibold uppercase tracking-[0.14em] text-civic-700">Loading LPTRPP dashboard…</div>
+      <p className="mt-2 text-[13px] text-ink-muted">Fetching route plan preparation records.</p>
     </Card>
   )
 }
 
 function ErrorState({ message }) {
   return (
-    <Card className="border border-red-200 bg-red-50 p-8 text-center shadow-panel">
-      <div className="text-sm font-semibold text-red-800">Unable to load LPTRPP data</div>
-      <p className="mt-2 text-sm text-red-700">{message}</p>
+    <Card className="rounded-xl border border-red-200 bg-red-50 p-10 text-center shadow-none ring-0">
+      <div className="text-[15px] font-semibold tracking-tightish text-red-900">Unable to load LPTRPP data</div>
+      <p className="mt-2 text-[13px] text-red-700">{message}</p>
     </Card>
   )
 }
 
 function EmptyState() {
   return (
-    <Card className="border border-slate-200 bg-white p-8 text-center shadow-panel">
-      <div className="text-base font-semibold text-slate-950">No LPTRPP data found</div>
-      <p className="mt-2 text-sm text-slate-500">
+    <Card className="rounded-xl border border-line bg-white p-10 text-center shadow-none ring-0">
+      <div className="text-[15px] font-semibold tracking-tightish text-ink">No LPTRPP data found</div>
+      <p className="mt-2 text-[13px] text-ink-muted">
         Adjust the selected Province/HUC, City/Municipality, year, or quarter filters.
       </p>
     </Card>
@@ -68,21 +68,21 @@ function RemarksPanel({ remarks, selectedLguPath }) {
   }
 
   return (
-    <Card className="border border-slate-200 bg-white shadow-panel">
+    <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
       <div className="mb-3">
-        <h3 className="text-base font-semibold text-slate-950">Remarks</h3>
-        <p className="text-sm text-slate-500">{selectedLguPath}</p>
+        <h3 className="text-sm font-semibold tracking-tightish text-ink">Remarks</h3>
+        <p className="text-[13px] text-ink-muted">{selectedLguPath}</p>
       </div>
       <div className="space-y-3">
         {remarks.map((record) => (
           <div
             key={record.id}
-            className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
+            className="rounded-lg border border-line bg-zinc-50/60 px-3 py-2"
           >
-            <div className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
               {record.year ?? 'N/A'} {record.quarter ? `Q${record.quarter}` : ''}
             </div>
-            <p className="mt-1 text-sm leading-6 text-slate-800">{record.remarks}</p>
+            <p className="mt-1 text-sm leading-6 text-ink-soft">{record.remarks}</p>
           </div>
         ))}
       </div>

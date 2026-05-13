@@ -40,27 +40,27 @@ const isHucProvinceOption = (value) => hucProvinceOptions.includes(normalizeText
 
 function LoadingState() {
   return (
-    <Card className="border border-slate-200 bg-white p-8 text-center shadow-panel">
-      <div className="text-sm font-semibold text-civic-700">Loading SKFPD dashboard...</div>
-      <p className="mt-2 text-sm text-slate-500">Fetching data...</p>
+    <Card className="rounded-xl border border-line bg-white p-10 text-center shadow-none ring-0">
+      <div className="text-[13px] font-semibold uppercase tracking-[0.14em] text-civic-700">Loading SKFPD dashboard…</div>
+      <p className="mt-2 text-[13px] text-ink-muted">Fetching data…</p>
     </Card>
   )
 }
 
 function ErrorState({ message }) {
   return (
-    <Card className="border border-red-200 bg-red-50 p-8 text-center shadow-panel">
-      <div className="text-sm font-semibold text-red-800">Unable to load SKFPD data</div>
-      <p className="mt-2 text-sm text-red-700">{message}</p>
+    <Card className="rounded-xl border border-red-200 bg-red-50 p-10 text-center shadow-none ring-0">
+      <div className="text-[15px] font-semibold tracking-tightish text-red-900">Unable to load SKFPD data</div>
+      <p className="mt-2 text-[13px] text-red-700">{message}</p>
     </Card>
   )
 }
 
 function EmptyState() {
   return (
-    <Card className="border border-slate-200 bg-white p-8 text-center shadow-panel">
-      <div className="text-base font-semibold text-slate-950">No SKFPD data found</div>
-      <p className="mt-2 text-sm text-slate-500">
+    <Card className="rounded-xl border border-line bg-white p-10 text-center shadow-none ring-0">
+      <div className="text-[15px] font-semibold tracking-tightish text-ink">No SKFPD data found</div>
+      <p className="mt-2 text-[13px] text-ink-muted">
         Adjust the selected location, year, or quarter filters to find matching SKFPD records.
       </p>
     </Card>

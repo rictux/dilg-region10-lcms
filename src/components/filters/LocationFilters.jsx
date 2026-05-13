@@ -23,17 +23,21 @@ const months = [
   { value: '12', label: 'December' },
 ]
 
+const fieldLabelClass =
+  'text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-muted'
+
+const fieldInputClass =
+  'mt-1.5 w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink shadow-none outline-none transition placeholder:text-ink-subtle hover:border-line-strong focus:border-civic-500 focus:ring-2 focus:ring-civic-500/15 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:text-ink-subtle'
+
 function SelectField({ label, value, onChange, children, disabled }) {
   return (
     <label className="block">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">
-        {label}
-      </span>
+      <span className={fieldLabelClass}>{label}</span>
       <select
         value={value}
         disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
-        className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-civic-500 focus:ring-2 focus:ring-civic-500/20 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+        className={fieldInputClass}
       >
         {children}
       </select>
@@ -78,9 +82,7 @@ function SearchableSelectField({
 
   return (
     <label className="relative block">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">
-        {label}
-      </span>
+      <span className={fieldLabelClass}>{label}</span>
       <div className="relative mt-1.5">
         <input
           ref={inputRef}
@@ -96,7 +98,7 @@ function SearchableSelectField({
             }, 120)
           }}
           onChange={(event) => handleSearchChange(event.target.value)}
-          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 pr-9 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-civic-500 focus:ring-2 focus:ring-civic-500/20 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+          className="w-full rounded-md border border-line bg-white px-3 py-2 pr-9 text-sm text-ink shadow-none outline-none transition placeholder:text-ink-subtle hover:border-line-strong focus:border-civic-500 focus:ring-2 focus:ring-civic-500/15 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:text-ink-subtle"
         />
         {value ? (
           <button
@@ -108,7 +110,7 @@ function SearchableSelectField({
               onChange('')
               inputRef.current?.focus()
             }}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-1.5 text-sm font-semibold text-slate-400 hover:text-slate-700"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-1.5 text-sm font-semibold text-ink-subtle transition hover:text-ink"
             aria-label={`Clear ${label}`}
           >
             x
@@ -117,7 +119,7 @@ function SearchableSelectField({
       </div>
 
       {isOpen && !disabled ? (
-        <div className="absolute z-30 mt-1 max-h-64 w-full overflow-y-auto rounded-lg border border-slate-200 bg-white py-1 shadow-xl">
+        <div className="absolute z-30 mt-1 max-h-64 w-full overflow-y-auto rounded-md border border-line bg-white py-1 shadow-pop">
           <button
             type="button"
             onMouseDown={(event) => event.preventDefault()}
@@ -126,7 +128,7 @@ function SearchableSelectField({
               onChange('')
               setIsOpen(false)
             }}
-            className="w-full px-3 py-2 text-left text-sm text-slate-600 hover:bg-civic-50"
+            className="w-full px-3 py-2 text-left text-sm text-ink-muted hover:bg-zinc-50"
           >
             {placeholder}
           </button>
@@ -141,15 +143,15 @@ function SearchableSelectField({
                   onChange(option)
                   setIsOpen(false)
                 }}
-                className={`w-full px-3 py-2 text-left text-sm hover:bg-civic-50 ${
-                  option === value ? 'bg-civic-50 font-semibold text-civic-700' : 'text-slate-800'
+                className={`w-full px-3 py-2 text-left text-sm transition hover:bg-zinc-50 ${
+                  option === value ? 'bg-civic-50 font-semibold text-civic-800' : 'text-ink-soft'
                 }`}
               >
                 {option}
               </button>
             ))
           ) : (
-            <div className="px-3 py-2 text-sm text-slate-500">No matching item found</div>
+            <div className="px-3 py-2 text-sm text-ink-muted">No matching item found</div>
           )}
         </div>
       ) : null}
@@ -229,36 +231,44 @@ export default function LocationFilters({
   }
 
   return (
-    <Card className="border border-slate-200 bg-white p-3 shadow-panel md:p-4">
-      <div className="mb-3 flex justify-end gap-2">
-        <button
-          type="button"
-          onClick={() =>
-            onChange({
-              provinceHuc: '',
-              cityMunName: '',
-              year: '',
-              ...(includeBarangay ? { barangayName: '' } : {}),
-              ...(includeQuarter ? { quarter: '' } : {}),
-              ...(includeMonth ? { month: '' } : {}),
-            })
-          }
-          className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-        >
-          Reset
-        </button>
-        <button
-          type="button"
-          onClick={onRefresh}
-          disabled={refreshDisabled || isRefreshing}
-          className="rounded-lg bg-civic-700 px-3 py-1.5 text-sm font-semibold text-white hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-slate-300"
-        >
-          {isRefreshing ? 'Refreshing...' : 'Refresh'}
-        </button>
+    <Card className="rounded-xl border border-line bg-white p-4 shadow-none ring-0 md:p-5">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
+            Filters
+          </div>
+          <p className="text-[13px] text-ink-muted">Narrow the dashboard by location and period.</p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() =>
+              onChange({
+                provinceHuc: '',
+                cityMunName: '',
+                year: '',
+                ...(includeBarangay ? { barangayName: '' } : {}),
+                ...(includeQuarter ? { quarter: '' } : {}),
+                ...(includeMonth ? { month: '' } : {}),
+              })
+            }
+            className="rounded-md border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:bg-zinc-50 hover:text-ink"
+          >
+            Reset
+          </button>
+          <button
+            type="button"
+            onClick={onRefresh}
+            disabled={refreshDisabled || isRefreshing}
+            className="rounded-md bg-civic-700 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-ink-subtle"
+          >
+            {isRefreshing ? 'Refreshing…' : 'Refresh'}
+          </button>
+        </div>
       </div>
 
       {optionError ? (
-        <div className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
           {optionError}
         </div>
       ) : null}

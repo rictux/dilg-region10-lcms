@@ -13,21 +13,36 @@ export default function Sidebar({ activePage, onNavigate, isOpen, onClose }) {
   return (
     <>
       <div
-        className={`fixed inset-0 z-30 bg-slate-950/40 transition-opacity lg:hidden ${
+        className={`fixed inset-0 z-30 bg-zinc-950/30 transition-opacity lg:hidden ${
           isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
         onClick={onClose}
       />
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-72 transform flex-col border-r border-civic-900/10 bg-civic-900 text-white transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-64 transform flex-col border-r border-line bg-white transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="border-b border-white/10 px-6 py-6">
-          <div className="text-xl font-semibold">LGU Compliance Monitoring System (LCMS)</div>
+        <div className="px-5 py-5">
+          <div className="flex items-center gap-2.5">
+            <span
+              aria-hidden
+              className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-civic-700 text-[11px] font-semibold tracking-tight text-white"
+            >
+              LC
+            </span>
+            <div className="leading-tight">
+              <div className="text-[13px] font-semibold tracking-tight text-ink">LCMS</div>
+              <div className="text-[11px] font-medium text-ink-muted">LGU Compliance Monitoring</div>
+            </div>
+          </div>
         </div>
 
-        <nav className="flex-1 space-y-2 px-4 py-5">
+        <div className="mx-5 mb-2 mt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-subtle">
+          Reports
+        </div>
+
+        <nav className="flex-1 space-y-0.5 px-3 pb-5">
           {navItems.map((item) => {
             const isActive = activePage === item.id
 
@@ -39,18 +54,27 @@ export default function Sidebar({ activePage, onNavigate, isOpen, onClose }) {
                   onNavigate(item.id)
                   onClose()
                 }}
-                className={`w-full rounded-lg px-4 py-3 text-left text-sm font-medium transition ${
+                className={`group flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-[13px] font-medium transition ${
                   isActive
-                    ? 'bg-white text-civic-900 shadow-lg shadow-civic-950/20'
-                    : 'text-civic-50 hover:bg-white/10'
+                    ? 'bg-civic-50 text-civic-800'
+                    : 'text-ink-soft hover:bg-zinc-50 hover:text-ink'
                 }`}
               >
-                {item.label}
+                <span
+                  aria-hidden
+                  className={`h-1.5 w-1.5 rounded-full transition ${
+                    isActive ? 'bg-civic-600' : 'bg-zinc-300 group-hover:bg-zinc-400'
+                  }`}
+                />
+                <span className="truncate">{item.label}</span>
               </button>
             )
           })}
         </nav>
 
+        <div className="border-t border-line px-5 py-3 text-[11px] text-ink-muted">
+          Region 10 &middot; DILG
+        </div>
       </aside>
     </>
   )

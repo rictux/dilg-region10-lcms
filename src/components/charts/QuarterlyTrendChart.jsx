@@ -4,10 +4,10 @@ import ChartEmptyState from './ChartEmptyState'
 
 function ChartTitle({ selectedLguPath }) {
   return (
-    <h3 className="text-base font-semibold text-slate-950">
+    <h3 className="text-sm font-semibold tracking-tightish text-ink">
       Quarterly Trend
       {selectedLguPath ? (
-        <span className="font-normal text-slate-500"> ({selectedLguPath})</span>
+        <span className="font-normal text-ink-muted"> ({selectedLguPath})</span>
       ) : null}
     </h3>
   )
@@ -29,29 +29,37 @@ export default function QuarterlyTrendChart({ data, selectedYear, selectedLguPat
   const options = {
     chart: {
       toolbar: { show: false },
-      fontFamily: 'Aptos, Segoe UI, sans-serif',
+      fontFamily: 'inherit',
     },
-    colors: ['#2563eb'],
+    colors: ['#2f7d64'],
     grid: {
-      show: false,
+      show: true,
+      borderColor: '#f1f1f3',
+      strokeDashArray: 4,
+      xaxis: { lines: { show: false } },
     },
     stroke: {
       curve: 'smooth',
-      width: 3,
+      width: 2.5,
     },
     markers: {
-      size: 5,
+      size: 4,
       colors: ['#ffffff'],
-      strokeColors: '#2563eb',
-      strokeWidth: 3,
+      strokeColors: '#2f7d64',
+      strokeWidth: 2,
+      hover: { sizeOffset: 2 },
     },
     dataLabels: {
       enabled: true,
       formatter: (value) => (value === null ? '' : value.toFixed(1)),
+      style: { colors: ['#18181b'], fontSize: '11px', fontWeight: 600 },
+      background: { enabled: false },
     },
     xaxis: {
       categories: data.map((item) => `Q${item.quarter}`),
-      labels: { style: { colors: '#475569' } },
+      labels: { style: { colors: '#71717a', fontSize: '11px' } },
+      axisBorder: { color: '#e4e4e7' },
+      axisTicks: { color: '#e4e4e7' },
     },
     yaxis: {
       min: 0,
@@ -70,10 +78,10 @@ export default function QuarterlyTrendChart({ data, selectedYear, selectedLguPat
   }
 
   return (
-    <Card className="border border-slate-200 bg-white shadow-panel">
+    <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
       <div className="flex flex-col justify-between gap-1 md:flex-row md:items-center">
         <ChartTitle selectedLguPath={selectedLguPath} />
-        <p className="text-sm text-slate-500">{selectedYear || 'All available years'}</p>
+        <p className="text-[13px] text-ink-muted">{selectedYear || 'All available years'}</p>
       </div>
       <Chart
         options={options}

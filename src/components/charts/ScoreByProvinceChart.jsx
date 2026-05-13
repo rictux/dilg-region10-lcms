@@ -42,7 +42,7 @@ export default function ScoreByProvinceChart({
   const options = {
     chart: {
       toolbar: { show: false },
-      fontFamily: 'Aptos, Segoe UI, sans-serif',
+      fontFamily: 'inherit',
     },
     colors: [baseColor],
     grid: {
@@ -50,7 +50,7 @@ export default function ScoreByProvinceChart({
     },
     plotOptions: {
       bar: {
-        borderRadius: 5,
+        borderRadius: 4,
         columnWidth: '46%',
         dataLabels: {
           position: 'top',
@@ -61,15 +61,17 @@ export default function ScoreByProvinceChart({
       enabled: true,
       formatter: (value) => (value === null ? '' : value.toFixed(1)),
       offsetY: -18,
-      style: { colors: ['#0f172a'], fontSize: '11px', fontWeight: 700 },
+      style: { colors: ['#18181b'], fontSize: '11px', fontWeight: 600 },
     },
     xaxis: {
       categories: labels,
       labels: {
         rotate: -35,
         trim: true,
-        style: { colors: '#475569', fontSize: '12px' },
+        style: { colors: '#71717a', fontSize: '11px' },
       },
+      axisBorder: { color: '#e4e4e7' },
+      axisTicks: { color: '#e4e4e7' },
     },
     yaxis: {
       min: 0,
@@ -87,8 +89,8 @@ export default function ScoreByProvinceChart({
   }
 
   return (
-    <Card className="border border-slate-200 bg-white shadow-panel">
-      <h3 className="text-base font-semibold text-slate-950">{title}</h3>
+    <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
+      <h3 className="text-sm font-semibold tracking-tightish text-ink">{title}</h3>
       <Chart
         options={options}
         series={[{ name: 'Average Score', data: seriesData }]}

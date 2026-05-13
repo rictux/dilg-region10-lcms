@@ -5,10 +5,10 @@ export default function SGLGPlaceholder({
   message = 'SGLG dashboard will be added soon.',
 }) {
   return (
-    <Card className="border border-slate-200 bg-white p-8 shadow-panel">
+    <Card className="rounded-xl border border-line bg-white p-10 shadow-none ring-0">
       <Badge color="amber">Placeholder</Badge>
-      <h2 className="mt-4 text-2xl font-semibold text-slate-950">{title}</h2>
-      <p className="mt-2 text-sm text-slate-600">{message}</p>
+      <h2 className="mt-4 text-xl font-semibold tracking-tighter2 text-ink">{title}</h2>
+      <p className="mt-2 text-[13px] text-ink-muted">{message}</p>
     </Card>
   )
 }

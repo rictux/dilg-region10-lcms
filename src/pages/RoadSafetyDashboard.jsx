@@ -33,27 +33,27 @@ const defaultFilters = {
 
 function LoadingState() {
   return (
-    <Card className="border border-slate-200 bg-white p-8 text-center shadow-panel">
-      <div className="text-sm font-semibold text-civic-700">Loading {moduleTitle} dashboard...</div>
-      <p className="mt-2 text-sm text-slate-500">Fetching road safety compliance records.</p>
+    <Card className="rounded-xl border border-line bg-white p-10 text-center shadow-none ring-0">
+      <div className="text-[13px] font-semibold uppercase tracking-[0.14em] text-civic-700">Loading {moduleTitle} dashboard…</div>
+      <p className="mt-2 text-[13px] text-ink-muted">Fetching road safety compliance records.</p>
     </Card>
   )
 }
 
 function ErrorState({ message }) {
   return (
-    <Card className="border border-red-200 bg-red-50 p-8 text-center shadow-panel">
-      <div className="text-sm font-semibold text-red-800">Unable to load {moduleTitle} data</div>
-      <p className="mt-2 text-sm text-red-700">{message}</p>
+    <Card className="rounded-xl border border-red-200 bg-red-50 p-10 text-center shadow-none ring-0">
+      <div className="text-[15px] font-semibold tracking-tightish text-red-900">Unable to load {moduleTitle} data</div>
+      <p className="mt-2 text-[13px] text-red-700">{message}</p>
     </Card>
   )
 }
 
 function EmptyState() {
   return (
-    <Card className="border border-slate-200 bg-white p-8 text-center shadow-panel">
-      <div className="text-base font-semibold text-slate-950">No {moduleTitle} data found</div>
-      <p className="mt-2 text-sm text-slate-500">
+    <Card className="rounded-xl border border-line bg-white p-10 text-center shadow-none ring-0">
+      <div className="text-[15px] font-semibold tracking-tightish text-ink">No {moduleTitle} data found</div>
+      <p className="mt-2 text-[13px] text-ink-muted">
         Adjust the selected Province/HUC, year, or quarter filters.
       </p>
     </Card>
@@ -62,9 +62,9 @@ function EmptyState() {
 
 function PeriodPrompt() {
   return (
-    <Card className="border border-slate-200 bg-white p-8 text-center shadow-panel">
-      <div className="text-base font-semibold text-slate-950">Select a year and quarter</div>
-      <p className="mt-2 text-sm text-slate-500">
+    <Card className="rounded-xl border border-line bg-white p-10 text-center shadow-none ring-0">
+      <div className="text-[15px] font-semibold tracking-tightish text-ink">Select a year and quarter</div>
+      <p className="mt-2 text-[13px] text-ink-muted">
         Road Class & Safety records are quarterly, so the dashboard loads only after both filters are selected.
       </p>
     </Card>
@@ -165,8 +165,8 @@ function ProvinceMetricColumnChart({
   }
 
   return (
-    <Card className="border border-slate-200 bg-white shadow-panel">
-      <h3 className="text-base font-semibold text-slate-950">{title}</h3>
+    <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
+      <h3 className="text-sm font-semibold tracking-tightish text-ink">{title}</h3>
       <Chart options={options} series={[{ name: fieldLabel, data: seriesData }]} type="bar" height={340} />
     </Card>
   )
@@ -260,8 +260,8 @@ function SpeedSignsChart({ data, selectedProvince = '', selectedFieldKey = '', o
   }
 
   return (
-    <Card className="border border-slate-200 bg-white shadow-panel">
-      <h3 className="text-base font-semibold text-slate-950">LGUs with Speed Limit Signs</h3>
+    <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
+      <h3 className="text-sm font-semibold tracking-tightish text-ink">LGUs with Speed Limit Signs</h3>
       <Chart options={options} series={series} type="bar" height={380} />
     </Card>
   )
@@ -273,9 +273,9 @@ function RoadCrashDataTableChart({ data, selectedProvince = '', onFilterSelect }
   }
 
   return (
-    <Card className="border border-slate-200 bg-white shadow-panel">
+    <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
       <div className="mb-3">
-        <h3 className="text-base font-semibold text-slate-950">Road Crash Data Collected</h3>
+        <h3 className="text-sm font-semibold tracking-tightish text-ink">Road Crash Data Collected</h3>
       </div>
       <div className="overflow-x-auto">
         <Table className="min-w-[520px]">

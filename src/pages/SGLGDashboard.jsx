@@ -92,27 +92,27 @@ function getOverallRatingClassName(value) {
 
 function LoadingState() {
   return (
-    <Card className="border border-slate-200 bg-white p-8 text-center shadow-panel">
-      <div className="text-sm font-semibold text-civic-700">Loading SGLG dashboard...</div>
-      <p className="mt-2 text-sm text-slate-500">Fetching assessment records and indicators.</p>
+    <Card className="rounded-xl border border-line bg-white p-10 text-center shadow-none ring-0">
+      <div className="text-[13px] font-semibold uppercase tracking-[0.14em] text-civic-700">Loading SGLG dashboard…</div>
+      <p className="mt-2 text-[13px] text-ink-muted">Fetching assessment records and indicators.</p>
     </Card>
   )
 }
 
 function ErrorState({ message }) {
   return (
-    <Card className="border border-red-200 bg-red-50 p-8 text-center shadow-panel">
-      <div className="text-sm font-semibold text-red-800">Unable to load SGLG data</div>
-      <p className="mt-2 text-sm text-red-700">{message}</p>
+    <Card className="rounded-xl border border-red-200 bg-red-50 p-10 text-center shadow-none ring-0">
+      <div className="text-[15px] font-semibold tracking-tightish text-red-900">Unable to load SGLG data</div>
+      <p className="mt-2 text-[13px] text-red-700">{message}</p>
     </Card>
   )
 }
 
 function EmptyState() {
   return (
-    <Card className="border border-slate-200 bg-white p-8 text-center shadow-panel">
-      <div className="text-base font-semibold text-slate-950">No SGLG data found</div>
-      <p className="mt-2 text-sm text-slate-500">
+    <Card className="rounded-xl border border-line bg-white p-10 text-center shadow-none ring-0">
+      <div className="text-[15px] font-semibold tracking-tightish text-ink">No SGLG data found</div>
+      <p className="mt-2 text-[13px] text-ink-muted">
         Adjust the selected Province/HUC, City/Municipality, or year filters.
       </p>
     </Card>
@@ -166,8 +166,8 @@ function SGLGRatingDonut({ statusCounts }) {
   }
 
   return (
-    <Card className="border border-slate-200 bg-white shadow-panel">
-      <h3 className="text-base font-semibold text-slate-950">Overall Rating Distribution</h3>
+    <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
+      <h3 className="text-sm font-semibold tracking-tightish text-ink">Overall Rating Distribution</h3>
       <Chart options={options} series={series} type="donut" height={310} />
     </Card>
   )
@@ -353,9 +353,9 @@ function AreaStatusChart({ indicators, showPercentages }) {
   }
 
   return (
-    <Card className="border border-slate-200 bg-white shadow-panel">
+    <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
       <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
-        <h3 className="text-base font-semibold text-slate-950">
+        <h3 className="text-sm font-semibold tracking-tightish text-ink">
           {showPercentages ? '10 Governance LGU Passing Rate' : '10 Governance Area Pass/Fail Value'}
         </h3>
       </div>
@@ -479,11 +479,11 @@ function SubIndicatorCard({ indicator, showPercentages, overallRating }) {
   }
 
   return (
-    <Card className="border border-slate-200 bg-white shadow-panel">
-      <div className="flex flex-col justify-between gap-2 border-b border-slate-100 pb-3 sm:flex-row sm:items-start">
+    <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
+      <div className="flex flex-col justify-between gap-2 border-b border-line pb-3 sm:flex-row sm:items-start">
         <div>
-          <h3 className="text-base font-semibold text-slate-950">{indicator.title}</h3>
-          <p className="mt-1 text-xs font-medium text-slate-500">
+          <h3 className="text-sm font-semibold tracking-tightish text-ink">{indicator.title}</h3>
+          <p className="mt-1 text-xs text-ink-muted">
             Sub-indicators: {subIndicatorsPassed} passed, {subIndicatorsFailed} failed
           </p>
           {requirementLabels.length ? (
@@ -530,11 +530,11 @@ function SGLGTable({
   const currentPage = Math.min(page + 1, totalPages)
 
   return (
-    <Card className="border border-slate-200 bg-white shadow-panel">
+    <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
       <div className="mb-4 flex flex-col justify-between gap-2 md:flex-row md:items-center">
         <div>
-          <h2 className="text-base font-semibold text-slate-950">SGLG Detailed Records</h2>
-          <p className="text-sm text-slate-500">
+          <h2 className="text-sm font-semibold tracking-tightish text-ink">SGLG Detailed Records</h2>
+          <p className="mt-0.5 text-[13px] text-ink-muted">
             {activeFilterLabel
               ? `Filtered by ${activeFilterLabel}`
               : 'Annual LGU ratings with the 10 governance area statuses.'}
@@ -545,7 +545,7 @@ function SGLGTable({
             <button
               type="button"
               onClick={onClearFilter}
-              className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              className="rounded-md border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:bg-zinc-50 hover:text-ink"
             >
               Clear filter
             </button>
@@ -553,12 +553,12 @@ function SGLGTable({
           <Badge color="slate">
             {records.length} of {totalRecords} records
           </Badge>
-          <label className="flex items-center gap-2 text-sm text-slate-600">
+          <label className="flex items-center gap-2 text-[13px] text-ink-muted">
             Rows
             <select
               value={pageSize}
               onChange={(event) => onPageSizeChange?.(Number(event.target.value))}
-              className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-sm"
+              className="rounded-md border border-line bg-white px-2 py-1 text-sm text-ink transition hover:border-line-strong focus:border-civic-500 focus:outline-none focus:ring-2 focus:ring-civic-500/15"
             >
               <option value={25}>25</option>
               <option value={50}>50</option>
@@ -619,8 +619,8 @@ function SGLGTable({
         </Table>
       </div>
 
-      <div className="mt-4 flex flex-col justify-between gap-3 border-t border-slate-200 pt-4 md:flex-row md:items-center">
-        <p className="text-sm text-slate-500">
+      <div className="mt-4 flex flex-col justify-between gap-3 border-t border-line pt-4 md:flex-row md:items-center">
+        <p className="text-[13px] text-ink-muted">
           Page {currentPage} of {totalPages}
         </p>
         <div className="flex gap-2">
@@ -628,7 +628,7 @@ function SGLGTable({
             type="button"
             onClick={() => onPageChange?.(Math.max(0, page - 1))}
             disabled={page === 0}
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:bg-zinc-50 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
           >
             Previous
           </button>
@@ -636,7 +636,7 @@ function SGLGTable({
             type="button"
             onClick={() => onPageChange?.(Math.min(totalPages - 1, page + 1))}
             disabled={page >= totalPages - 1}
-            className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-md border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:bg-zinc-50 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
           >
             Next
           </button>

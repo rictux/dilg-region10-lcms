@@ -20,19 +20,19 @@ const initialFilters = {
 }
 
 const miniStatClassName =
-  'flex min-h-[74px] flex-col rounded-lg border border-slate-200 bg-slate-50 px-3 py-2'
+  'flex min-h-[74px] flex-col rounded-lg border border-line bg-zinc-50/60 px-3 py-2'
 
 const miniStatLabelClassName =
-  'flex min-h-[32px] items-start text-[11px] font-semibold uppercase leading-4 tracking-[0.12em] text-slate-500'
+  'flex min-h-[28px] items-start text-[10px] font-semibold uppercase leading-4 tracking-[0.14em] text-ink-muted'
 
-const miniStatValueClassName = 'mt-auto text-sm font-semibold text-slate-900'
+const miniStatValueClassName = 'mt-auto font-num text-[15px] font-semibold tracking-tightish text-ink'
 
 const reportHeaderClassName = 'flex min-h-[78px] items-start justify-between gap-3'
 
 const statsGridClassName = 'mt-4 grid min-h-[74px] gap-2 sm:grid-cols-3'
 
 const statsMessageClassName =
-  'mt-4 flex min-h-[74px] items-center rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-500'
+  'mt-4 flex min-h-[74px] items-center rounded-lg border border-line bg-zinc-50/60 px-3 py-2 text-[13px] text-ink-muted'
 
 const reportModules = [
   {
@@ -120,9 +120,9 @@ function getReportState(report, filters) {
 
 function SelectionState() {
   return (
-    <Card className="border border-slate-200 bg-white p-8 text-center shadow-panel">
-      <div className="text-base font-semibold text-slate-950">Select a location</div>
-      <p className="mt-2 text-sm text-slate-500">Population and LGU profile cards will appear here.</p>
+    <Card className="rounded-xl border border-dashed border-line bg-white p-10 text-center shadow-none ring-0">
+      <div className="text-[15px] font-semibold tracking-tightish text-ink">Select a location</div>
+      <p className="mt-2 text-[13px] text-ink-muted">Population and LGU profile cards will appear here.</p>
     </Card>
   )
 }
@@ -455,7 +455,7 @@ export default function Overview({ onNavigate }) {
       />
 
       {locationStatsQuery.error ? (
-        <Card className="border border-red-200 bg-red-50 text-red-700 shadow-panel">
+        <Card className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-none ring-0">
           {locationStatsQuery.error.message}
         </Card>
       ) : null}
@@ -484,11 +484,11 @@ export default function Overview({ onNavigate }) {
           const reportState = getReportState(report, filters)
 
           return (
-            <Card key={report.id} className="flex h-full min-h-[306px] flex-col border border-slate-200 bg-white shadow-panel">
+            <Card key={report.id} className="flex h-full min-h-[306px] flex-col rounded-xl border border-line bg-white p-5 shadow-none ring-0 transition hover:border-line-strong">
               <div className={reportHeaderClassName}>
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-950">{report.title}</h3>
-                  <p className="mt-1 text-sm text-slate-600">{report.description}</p>
+                  <h3 className="text-[15px] font-semibold tracking-tightish text-ink">{report.title}</h3>
+                  <p className="mt-1 text-[13px] leading-relaxed text-ink-muted">{report.description}</p>
                 </div>
                 <Badge color={reportState.color}>{reportState.label}</Badge>
               </div>
@@ -542,21 +542,21 @@ export default function Overview({ onNavigate }) {
                   isSelectedLgu={Boolean(sglgStatsFilters.province || sglgStatsFilters.city)}
                 />
               ) : null}
-              <div className="mt-auto flex min-h-[82px] items-end justify-between gap-3 border-t border-slate-100 pt-4">
+              <div className="mt-auto flex min-h-[82px] items-end justify-between gap-3 border-t border-line pt-4">
                 <div>
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
                     Frequency
                   </div>
-                  <div className="mt-1 text-sm font-semibold text-slate-900">{report.frequency}</div>
+                  <div className="mt-1 text-[13px] font-semibold text-ink">{report.frequency}</div>
                 </div>
                 {report.id === 'bfdp' || report.id === 'skfpd' ? (
                   <button
                     type="button"
                     onClick={() => onNavigate(report.id, { filters: getQuarterlyFilterPayload(filters) })}
                     disabled={!reportState.isApplicable}
-                    className="rounded-lg bg-civic-700 px-4 py-2 text-sm font-semibold text-white hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-slate-300"
+                    className="inline-flex items-center gap-1 rounded-md bg-civic-700 px-3.5 py-1.5 text-[13px] font-medium text-white transition hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-ink-subtle"
                   >
-                    Open
+                    Open <span aria-hidden>→</span>
                   </button>
                 ) : null}
                 {report.id === 'ltrpp' ? (
@@ -564,9 +564,9 @@ export default function Overview({ onNavigate }) {
                     type="button"
                     onClick={() => onNavigate('ltrpp', { filters: getLTRPPFilterPayload(filters) })}
                     disabled={!reportState.isApplicable || !isLTRPPApplicable}
-                    className="rounded-lg bg-civic-700 px-4 py-2 text-sm font-semibold text-white hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-slate-300"
+                    className="inline-flex items-center gap-1 rounded-md bg-civic-700 px-3.5 py-1.5 text-[13px] font-medium text-white transition hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-ink-subtle"
                   >
-                    Open
+                    Open <span aria-hidden>→</span>
                   </button>
                 ) : null}
                 {report.id === 'road-safety' ? (
@@ -574,9 +574,9 @@ export default function Overview({ onNavigate }) {
                     type="button"
                     onClick={() => onNavigate('road-safety', { filters: getRoadSafetyFilterPayload(filters) })}
                     disabled={!reportState.isApplicable || !isRoadSafetyApplicable}
-                    className="rounded-lg bg-civic-700 px-4 py-2 text-sm font-semibold text-white hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-slate-300"
+                    className="inline-flex items-center gap-1 rounded-md bg-civic-700 px-3.5 py-1.5 text-[13px] font-medium text-white transition hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-ink-subtle"
                   >
-                    Open
+                    Open <span aria-hidden>→</span>
                   </button>
                 ) : null}
                 {report.id === 'asf-monitoring' ? (
@@ -584,9 +584,9 @@ export default function Overview({ onNavigate }) {
                     type="button"
                     onClick={() => onNavigate('asf-monitoring', { filters: getASFMonitoringFilterPayload(filters) })}
                     disabled={!reportState.isApplicable || !isASFMonitoringApplicable}
-                    className="rounded-lg bg-civic-700 px-4 py-2 text-sm font-semibold text-white hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-slate-300"
+                    className="inline-flex items-center gap-1 rounded-md bg-civic-700 px-3.5 py-1.5 text-[13px] font-medium text-white transition hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-ink-subtle"
                   >
-                    Open
+                    Open <span aria-hidden>→</span>
                   </button>
                 ) : null}
                 {report.id === 'sglg' ? (
@@ -594,9 +594,9 @@ export default function Overview({ onNavigate }) {
                     type="button"
                     onClick={() => onNavigate('sglg', { filters: getAnnualFilterPayload(filters) })}
                     disabled={!reportState.isApplicable || !isSGLGApplicable}
-                    className="rounded-lg bg-civic-700 px-4 py-2 text-sm font-semibold text-white hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-slate-300"
+                    className="inline-flex items-center gap-1 rounded-md bg-civic-700 px-3.5 py-1.5 text-[13px] font-medium text-white transition hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-ink-subtle"
                   >
-                    Open
+                    Open <span aria-hidden>→</span>
                   </button>
                 ) : null}
               </div>

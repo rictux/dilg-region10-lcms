@@ -15,7 +15,7 @@ export default function DashboardLayout({ activePage, onNavigate, children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="min-h-screen lg:flex">
+    <div className="min-h-screen bg-surface-muted lg:flex">
       <Sidebar
         activePage={activePage}
         isOpen={sidebarOpen}
@@ -27,7 +27,7 @@ export default function DashboardLayout({ activePage, onNavigate, children }) {
           title={titles[activePage] ?? 'Overview'}
           onMenuClick={() => setSidebarOpen(true)}
         />
-        <main className="px-4 py-6 md:px-8">{children}</main>
+        <main className="mx-auto w-full max-w-[1400px] px-4 py-6 md:px-8 md:py-8">{children}</main>
       </div>
     </div>
   )
