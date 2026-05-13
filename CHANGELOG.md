@@ -4,6 +4,10 @@ Changes are generated from the Git commit log and grouped by commit date.
 
 
 
+
+## 2026-05-13
+
+- `7d3280a` refactor: dashboard loading, error, and empty states for improved UI consistency
 ## 2026-05-11
 
 - `5cc0861` feat: Add ASF Monitoring Dashboard and related components
