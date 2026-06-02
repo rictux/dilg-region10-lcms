@@ -16,6 +16,10 @@ const uniqueSorted = (values) =>
   [...new Set(values.map(normalizeOption).filter(Boolean))].sort((a, b) => a.localeCompare(b))
 
 const toBinary = (value) => {
+  if (value === null || value === undefined || String(value).trim() === '') {
+    return null
+  }
+
   const number = Number(value)
   return number === 0 || number === 1 ? number : null
 }

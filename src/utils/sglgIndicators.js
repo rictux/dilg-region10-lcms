@@ -328,6 +328,16 @@ const youthPoolFields = [
   'youth_lgu_support',
 ]
 
+const businessAlternativeField = 'biz_pcci_finalist'
+const businessNonProvinceRequiredFields = [
+  'biz_investment_office',
+  'biz_citizens_charter',
+  'biz_streamlined_process',
+  'biz_economic_data',
+  'biz_investment_code',
+]
+const businessProvinceRequiredFields = ['biz_investment_office', 'biz_investment_code']
+
 const normalizeText = (value) => (typeof value === 'string' ? value.trim().toLowerCase() : '')
 
 function getGeo(row = {}) {
@@ -477,6 +487,28 @@ export function getSGLGRequirementForField(row, areaKey, fieldKey) {
       'Any 3',
       'Part of the Youth Development pool; pass at least 3 of Youth Development Council, Youth Development Office, Youth Development Plan, and LGU Support.',
     )
+  }
+
+  if (areaKey === 'biz') {
+    if (fieldKey === businessAlternativeField) {
+      return makeRequirement(
+        POOL,
+        'Alternative',
+        'Pass PCCI Finalist to pass this Area on its own, without the required items.',
+      )
+    }
+
+    const requiredFields = profile.isProvince
+      ? businessProvinceRequiredFields
+      : businessNonProvinceRequiredFields
+
+    if (requiredFields.includes(fieldKey)) {
+      return makeRequirement(
+        REQUIRED,
+        'Required',
+        'Required to pass this Area when PCCI Finalist is not passed.',
+      )
+    }
   }
 
   return null

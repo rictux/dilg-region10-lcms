@@ -256,6 +256,10 @@ function getRequirementNote(indicator, fields) {
     return '* in green counts toward the pool. PASS any 3 of these 4 indicators to PASS in this Area.'
   }
 
+  if (indicator.key === 'biz') {
+    return 'PASS the PCCI Finalist (green *), OR PASS all the red * items, to PASS in this Area.'
+  }
+
   return '* Required to pass.'
 }
 
@@ -409,7 +413,8 @@ function AreaStatusChart({ indicators, showPercentages }) {
 }
 
 function SubIndicatorCard({ indicator, showPercentages }) {
-  const hasData = indicator.subIndicators.some((field) => field.total > 0)
+  const subIndicators = indicator.subIndicators
+  const hasData = subIndicators.some((field) => field.total > 0)
 
   if (!hasData) {
     return (
@@ -420,21 +425,23 @@ function SubIndicatorCard({ indicator, showPercentages }) {
     )
   }
 
-  const failValues = indicator.subIndicators.map((field) =>
+  const showRequirements = !showPercentages
+  const failValues = subIndicators.map((field) =>
     showPercentages
       ? field.total
         ? -1 * Number(((field.fail / field.total) * 100).toFixed(1))
         : 0
       : -1 * field.fail,
   )
-  const passValues = indicator.subIndicators.map((field) =>
+  const passValues = subIndicators.map((field) =>
     showPercentages ? field.percentage : field.pass,
   )
   const axisLimit = showPercentages ? 100 : getAxisLimit([...failValues, ...passValues])
-  const subIndicatorsPassed = indicator.subIndicators.reduce((sum, field) => sum + field.pass, 0)
-  const subIndicatorsFailed = indicator.subIndicators.reduce((sum, field) => sum + field.fail, 0)
-  const requirementLabels = getRequirementLabels(indicator.subIndicators)
-  const requirementNote = getRequirementNote(indicator, indicator.subIndicators)
+  const subIndicatorsPassed = subIndicators.reduce((sum, field) => sum + field.pass, 0)
+  const subIndicatorsFailed = subIndicators.reduce((sum, field) => sum + field.fail, 0)
+  const requirementLabels = showRequirements ? getRequirementLabels(subIndicators) : []
+  const requirementNote = showRequirements ? getRequirementNote(indicator, subIndicators) : ''
+  const markerlessFields = subIndicators.map((field) => ({ label: field.label }))
 
   const options = {
     chart: {
@@ -442,8 +449,10 @@ function SubIndicatorCard({ indicator, showPercentages }) {
       fontFamily: 'Aptos, Segoe UI, sans-serif',
       stacked: true,
       events: {
-        mounted: (chartContext) => applyRequiredAxisMarkers(chartContext.el, indicator.subIndicators),
-        updated: (chartContext) => applyRequiredAxisMarkers(chartContext.el, indicator.subIndicators),
+        mounted: (chartContext) =>
+          applyRequiredAxisMarkers(chartContext.el, showRequirements ? subIndicators : markerlessFields),
+        updated: (chartContext) =>
+          applyRequiredAxisMarkers(chartContext.el, showRequirements ? subIndicators : markerlessFields),
       },
     },
     colors: ['#d3212c', '#2f7d64'],
@@ -486,7 +495,7 @@ function SubIndicatorCard({ indicator, showPercentages }) {
     },
     tooltip: {
       custom: ({ seriesIndex, dataPointIndex }) => {
-        const field = indicator.subIndicators[dataPointIndex]
+        const field = subIndicators[dataPointIndex]
 
         if (!field) {
           return ''
@@ -498,7 +507,7 @@ function SubIndicatorCard({ indicator, showPercentages }) {
         const valueLabel = showPercentages ? `${value}%` : `${value} value`
         const totalLabel = showPercentages ? 'LGUs' : 'assessment value(s)'
         const requirement = field.requirement
-        const requirementLine = requirement
+        const requirementLine = showRequirements && requirement
           ? `<div style="margin-top: 8px; color: #0369a1; font-weight: 700;">${getRequirementMarker(requirement)}: ${requirement.description}</div>`
           : ''
 
@@ -540,13 +549,13 @@ function SubIndicatorCard({ indicator, showPercentages }) {
         </div>
       </div>
       <Chart
-        options={{ ...options, xaxis: { ...options.xaxis, categories: indicator.subIndicators.map((field) => field.label) } }}
+        options={{ ...options, xaxis: { ...options.xaxis, categories: subIndicators.map((field) => field.label) } }}
         series={[
           { name: showPercentages ? 'Fail Rate' : 'Fail Value', data: failValues },
           { name: showPercentages ? 'Pass Rate' : 'Pass Value', data: passValues },
         ]}
         type="bar"
-        height={Math.max(280, indicator.subIndicators.length * 31)}
+        height={Math.max(280, subIndicators.length * 31)}
       />
     </Card>
   )
