@@ -8,6 +8,7 @@ Changes are generated from the Git commit log and grouped by commit date.
 
 ## 2026-06-02
 
+- `f523310` feat: enhance business area requirements and improve data handling in SGLG Dashboard
 - `341a58e` feat: remove future reports and enhance area status logic in SGLG Dashboard
 - `4673977` feat: Enhance SGLG Dashboard with area status formatting and environmental requirement logic
 ## 2026-05-13
