@@ -5,6 +5,10 @@ Changes are generated from the Git commit log and grouped by commit date.
 
 
 
+
+## 2026-06-02
+
+- `4673977` feat: Enhance SGLG Dashboard with area status formatting and environmental requirement logic
 ## 2026-05-13
 
 - `7d3280a` refactor: dashboard loading, error, and empty states for improved UI consistency
