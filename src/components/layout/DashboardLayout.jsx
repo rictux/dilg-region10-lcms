@@ -8,7 +8,6 @@ const titles = {
   skfpd: 'SK Full Public Disclosure',
   ltrpp: 'Local Public Transport Route Plan Preparation',
   sglg: 'Seal of Good Local Governance',
-  future: 'Future Reports',
 }
 
 export default function DashboardLayout({ activePage, onNavigate, children }) {

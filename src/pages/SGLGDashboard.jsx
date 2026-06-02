@@ -248,6 +248,14 @@ function getRequirementNote(indicator, fields) {
     return '* in red is required to pass. * in green counts toward the Any 1/Any 2 Environmental Management pools.'
   }
 
+  if (indicator.key === 'tour') {
+    return '* in green counts toward the pools. PASS any 3 of the first four and any 3 of the last four to PASS in this Area.'
+  }
+
+  if (indicator.key === 'youth') {
+    return '* in green counts toward the pool. PASS any 3 of these 4 indicators to PASS in this Area.'
+  }
+
   return '* Required to pass.'
 }
 
@@ -302,7 +310,7 @@ function groupIndicatorsBySubIndicatorCount(indicators) {
 
 function AreaStatusChart({ indicators, showPercentages }) {
   if (!indicators.length) {
-    return <ChartEmptyState title={showPercentages ? '10 Governance LGU Passing Rate' : '10 Governance Area Pass/Fail Value'} />
+    return <ChartEmptyState title={showPercentages ? '10 Governance LGU Passing Rate' : '10 Governance Areas Rating'} />
   }
 
   const failValues = indicators.map((item) =>
@@ -384,7 +392,7 @@ function AreaStatusChart({ indicators, showPercentages }) {
     <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
       <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
         <h3 className="text-sm font-semibold tracking-tightish text-ink">
-          {showPercentages ? '10 Governance LGU Passing Rate' : '10 Governance Area Pass/Fail Value'}
+          {showPercentages ? '10 Governance LGU Passing Rate' : '10 Governance Areas Rating'}
         </h3>
       </div>
       <Chart
@@ -407,7 +415,7 @@ function SubIndicatorCard({ indicator, showPercentages }) {
     return (
       <ChartEmptyState
         title={indicator.title}
-        message="No assessed sub-indicator values are available for the selected filters."
+        message="No assessed indicator values are available for the selected filters."
       />
     )
   }
@@ -512,7 +520,7 @@ function SubIndicatorCard({ indicator, showPercentages }) {
         <div>
           <h3 className="text-sm font-semibold tracking-tightish text-ink">{indicator.title}</h3>
           <p className="mt-1 text-xs text-ink-muted">
-            Sub-indicators: {subIndicatorsPassed} passed, {subIndicatorsFailed} failed
+            Indicators: {subIndicatorsPassed} passed, {subIndicatorsFailed} failed
           </p>
           {requirementLabels.length ? (
             <p className="mt-2 text-xs font-semibold text-sky-800">

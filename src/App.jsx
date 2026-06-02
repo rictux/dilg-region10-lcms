@@ -7,7 +7,6 @@ import LTRPPDashboard from './pages/LTRPPDashboard'
 import RoadSafetyDashboard from './pages/RoadSafetyDashboard'
 import SKFPDDashboard from './pages/SKFPDDashboard'
 import SGLGDashboard from './pages/SGLGDashboard'
-import SGLGPlaceholder from './pages/SGLGPlaceholder'
 
 export default function App() {
   const [activePage, setActivePage] = useState('overview')
@@ -69,15 +68,6 @@ export default function App() {
 
     if (activePage === 'asf-monitoring') {
       return <ASFMonitoringDashboard initialFilters={asfMonitoringInitialFilters} />
-    }
-
-    if (activePage === 'future') {
-      return (
-        <SGLGPlaceholder
-          title="Future Reports"
-          message="Future report dashboards will be added when schemas are provided."
-        />
-      )
     }
 
     return <Overview onNavigate={handleNavigate} />

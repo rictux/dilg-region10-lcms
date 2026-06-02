@@ -89,15 +89,6 @@ const reportModules = [
     color: 'emerald',
     periods: ['month'],
   },
-  {
-    id: 'future',
-    title: 'Other',
-    description: 'Reserved for future schemas',
-    frequency: 'To be configured',
-    status: 'Reserved',
-    color: 'slate',
-    periods: [],
-  },
 ]
 
 function getReportState(report, filters) {

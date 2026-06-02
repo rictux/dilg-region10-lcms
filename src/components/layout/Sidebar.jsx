@@ -6,7 +6,6 @@ const navItems = [
   { id: 'ltrpp', label: 'LPTRPP' },
   { id: 'road-safety', label: 'Road Class & Safety' },
   { id: 'asf-monitoring', label: 'ASF Monitoring' },
-  { id: 'future', label: 'Other future reports' },
 ]
 
 export default function Sidebar({ activePage, onNavigate, isOpen, onClose }) {

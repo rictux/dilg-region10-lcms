@@ -308,6 +308,26 @@ const environmentalGreenPoolFields = [
   'env_public_parks',
 ]
 
+const tourismFirstPoolFields = [
+  'tour_officer',
+  'tour_info_center',
+  'tour_dev_plan',
+  'tour_stats_report',
+]
+const tourismSecondPoolFields = [
+  'tour_culture_council',
+  'tour_budget_impl',
+  'tour_property_inventory',
+  'tour_narrative_published',
+]
+
+const youthPoolFields = [
+  'youth_dev_council',
+  'youth_dev_office',
+  'youth_dev_plan',
+  'youth_lgu_support',
+]
+
 const normalizeText = (value) => (typeof value === 'string' ? value.trim().toLowerCase() : '')
 
 function getGeo(row = {}) {
@@ -431,6 +451,32 @@ export function getSGLGRequirementForField(row, areaKey, fieldKey) {
         'Part of the Environmental Management pool; pass at least 1 of Wetland & Water Mngmt, Water Quality Mngmt, and Public Parks.',
       )
     }
+  }
+
+  if (areaKey === 'tour') {
+    if (tourismFirstPoolFields.includes(fieldKey)) {
+      return makeRequirement(
+        POOL,
+        'Any 3',
+        'Part of the first Tourism pool; pass at least 3 of Tourism Officer, Information Center, Tourism Development Plan, and Statistics Report.',
+      )
+    }
+
+    if (tourismSecondPoolFields.includes(fieldKey)) {
+      return makeRequirement(
+        POOL,
+        'Any 3',
+        'Part of the second Tourism pool; pass at least 3 of Culture Council, Budget Implementation, Property Inventory, and Published Narrative.',
+      )
+    }
+  }
+
+  if (areaKey === 'youth' && youthPoolFields.includes(fieldKey)) {
+    return makeRequirement(
+      POOL,
+      'Any 3',
+      'Part of the Youth Development pool; pass at least 3 of Youth Development Council, Youth Development Office, Youth Development Plan, and LGU Support.',
+    )
   }
 
   return null

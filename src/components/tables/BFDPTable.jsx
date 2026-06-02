@@ -29,8 +29,8 @@ const getBFDPRecordLabel = (record) => {
   const barangayName = getGeoLabelPart(record, 'barangay_name')
   const isHuc = isHucProvinceOption(provinceHuc)
   const parts = isHuc
-    ? [provinceHuc, barangayName]
-    : [provinceHuc, cityMunName, barangayName]
+    ? [barangayName, provinceHuc]
+    : [barangayName, cityMunName, provinceHuc]
 
   return parts.filter(Boolean).join(', ') || 'Unspecified'
 }

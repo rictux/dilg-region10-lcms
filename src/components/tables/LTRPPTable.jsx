@@ -26,8 +26,9 @@ const getGeoLabelPart = (record, key) => {
 const getLTRPPRecordLabel = (record) => {
   const provinceHuc = getGeoLabelPart(record, 'province_huc')
   const cityMunName = getGeoLabelPart(record, 'city_mun_name')
+  const barangayName = getGeoLabelPart(record, 'barangay_name')
   const isHuc = isHucProvinceOption(provinceHuc)
-  const parts = isHuc ? [provinceHuc] : [provinceHuc, cityMunName]
+  const parts = isHuc ? [barangayName, provinceHuc] : [barangayName, cityMunName, provinceHuc]
 
   return parts.filter(Boolean).join(', ') || 'Unspecified'
 }
