@@ -321,6 +321,7 @@ function buildAnalytics(rows, filters = {}) {
     return {
       ...indicator,
       ...statusStats,
+      latestStatus: latestRecord ? toBinary(latestRecord[indicator.statusKey]) : null,
       subIndicators,
       subIndicatorAverage,
     }

@@ -133,13 +133,13 @@ export const SGLG_INDICATORS = [
     shortTitle: 'Environment',
     statusKey: 'area_env_status',
     fields: [
-      { key: 'env_swm_board', label: 'SWM Board' },
+      { key: 'env_swm_board', label: 'SWMB' },
       { key: 'env_no_open_dumpsite', label: 'No Open Dumpsite' },
-      { key: 'env_swm_plan_10yr', label: '10-Year SWM Plan' },
-      { key: 'env_mrf', label: 'MRF' },
+      { key: 'env_swm_plan_10yr', label: 'SWMP' },
+      { key: 'env_mrf', label: 'Functional MRF' },
       { key: 'env_sanitary_landfill', label: 'Sanitary Landfill' },
-      { key: 'env_wetland_conservation', label: 'Wetland Conservation' },
-      { key: 'env_water_quality', label: 'Water Quality' },
+      { key: 'env_wetland_conservation', label: 'Wetland & Water Mngmt' },
+      { key: 'env_water_quality', label: 'Water Quality Mngmt' },
       { key: 'env_public_parks', label: 'Public Parks' },
     ],
   },
@@ -289,6 +289,25 @@ const healthPoolFields = [
   'health_epi_surveillance',
 ]
 
+const environmentalCoreFields = ['env_swm_board', 'env_no_open_dumpsite']
+const environmentalHucRequiredFields = [
+  ...environmentalCoreFields,
+  'env_swm_plan_10yr',
+  'env_mrf',
+  'env_sanitary_landfill',
+]
+const environmentalProvinceRequiredFields = ['env_swm_board', 'env_swm_plan_10yr']
+const environmentalCityMunicipalityPoolFields = [
+  'env_swm_plan_10yr',
+  'env_mrf',
+  'env_sanitary_landfill',
+]
+const environmentalGreenPoolFields = [
+  'env_wetland_conservation',
+  'env_water_quality',
+  'env_public_parks',
+]
+
 const normalizeText = (value) => (typeof value === 'string' ? value.trim().toLowerCase() : '')
 
 function getGeo(row = {}) {
@@ -343,6 +362,18 @@ function getSocialRequiredFields(profile) {
   return socialMunicipalityUpperIncomeRequiredFields
 }
 
+function getEnvironmentalRequiredFields(profile) {
+  if (profile.isProvince) {
+    return environmentalProvinceRequiredFields
+  }
+
+  if (profile.isHuc) {
+    return environmentalHucRequiredFields
+  }
+
+  return environmentalCoreFields
+}
+
 export function getSGLGRequirementForField(row, areaKey, fieldKey) {
   const profile = getLguProfile(row)
 
@@ -376,6 +407,28 @@ export function getSGLGRequirementForField(row, areaKey, fieldKey) {
         POOL,
         `Any ${threshold}`,
         `Part of the Health Compliance pool; pass at least ${threshold} of these items.`,
+      )
+    }
+  }
+
+  if (areaKey === 'env') {
+    if (getEnvironmentalRequiredFields(profile).includes(fieldKey)) {
+      return makeRequirement(REQUIRED, 'Required', 'Required for Environmental Management pass.')
+    }
+
+    if (!profile.isProvince && !profile.isHuc && environmentalCityMunicipalityPoolFields.includes(fieldKey)) {
+      return makeRequirement(
+        POOL,
+        'Any 2',
+        'Part of the Environmental Management pool; pass at least 2 of SWMP, Functional MRF, and Sanitary Landfill.',
+      )
+    }
+
+    if (environmentalGreenPoolFields.includes(fieldKey)) {
+      return makeRequirement(
+        POOL,
+        'Any 1',
+        'Part of the Environmental Management pool; pass at least 1 of Wetland & Water Mngmt, Water Quality Mngmt, and Public Parks.',
       )
     }
   }

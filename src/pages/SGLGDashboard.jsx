@@ -72,6 +72,30 @@ function formatRating(value) {
   return 'No Rating'
 }
 
+function formatAreaStatus(value) {
+  if (value === 1) {
+    return 'Passed'
+  }
+
+  if (value === 0) {
+    return 'Failed'
+  }
+
+  return 'No Rating'
+}
+
+function getAreaStatusClassName(value) {
+  if (value === 1) {
+    return 'text-[#069c56]'
+  }
+
+  if (value === 0) {
+    return 'text-[#d3212c]'
+  }
+
+  return 'text-civic-900'
+}
+
 function formatNumber(value) {
   return typeof value === 'number' ? value.toLocaleString() : 'N/A'
 }
@@ -218,6 +242,10 @@ function getRequirementNote(indicator, fields) {
 
   if (indicator.key === 'health') {
     return '* in red is required to pass. * in green counts toward the Any 4/Any 6 items to pass.'
+  }
+
+  if (indicator.key === 'env') {
+    return '* in red is required to pass. * in green counts toward the Any 1/Any 2 Environmental Management pools.'
   }
 
   return '* Required to pass.'
@@ -372,7 +400,7 @@ function AreaStatusChart({ indicators, showPercentages }) {
   )
 }
 
-function SubIndicatorCard({ indicator, showPercentages, overallRating }) {
+function SubIndicatorCard({ indicator, showPercentages }) {
   const hasData = indicator.subIndicators.some((field) => field.total > 0)
 
   if (!hasData) {
@@ -498,8 +526,8 @@ function SubIndicatorCard({ indicator, showPercentages, overallRating }) {
               LGU Passing Rate
             </div>
           ) : null}
-          <div className="text-sm font-semibold text-civic-900">
-            {showPercentages ? `${indicator.percentage}%` : formatRating(overallRating)}
+          <div className={`text-sm font-semibold ${showPercentages ? 'text-civic-900' : getAreaStatusClassName(indicator.latestStatus)}`}>
+            {showPercentages ? `${indicator.percentage}%` : formatAreaStatus(indicator.latestStatus)}
           </div>
         </div>
       </div>
@@ -861,7 +889,6 @@ export default function SGLGDashboard({ initialFilters }) {
                     key={indicator.key}
                     indicator={indicator}
                     showPercentages={showPercentages}
-                    overallRating={dashboard.latestOverallRating}
                   />
                 ))}
               </div>
