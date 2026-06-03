@@ -92,11 +92,11 @@ export const SGLG_INDICATORS = [
     shortTitle: 'Education',
     statusKey: 'area_educ_status',
     fields: [
-      { key: 'educ_school_board', label: 'School Board' },
-      { key: 'educ_sef_disbursement', label: 'SEF Disbursement' },
-      { key: 'educ_inclusive_prog', label: 'Inclusive Program' },
-      { key: 'educ_early_childhood', label: 'Early Childhood Care' },
-      { key: 'educ_tesda_training', label: 'TESDA Training' },
+      { key: 'educ_school_board', label: 'Functional LSB' },
+      { key: 'educ_sef_disbursement', label: 'Special Educ Fund' },
+      { key: 'educ_inclusive_prog', label: 'Educ Programs' },
+      { key: 'educ_early_childhood', label: 'ECCD' },
+      { key: 'educ_tesda_training', label: 'Technical Educ' },
     ],
   },
   {
@@ -120,10 +120,10 @@ export const SGLG_INDICATORS = [
     shortTitle: 'Peace and Order',
     statusKey: 'area_peace_status',
     fields: [
-      { key: 'peace_audit_report', label: 'Peace and Order Audit' },
-      { key: 'peace_anti_drug_audit', label: 'Anti-Drug Audit' },
-      { key: 'peace_pnp_logistical', label: 'PNP Logistical Support' },
-      { key: 'peace_bpats_trained', label: 'BPATS Trained' },
+      { key: 'peace_audit_report', label: 'Peace and Order' },
+      { key: 'peace_anti_drug_audit', label: 'ADAC Audit' },
+      { key: 'peace_pnp_logistical', label: 'Support to PNP' },
+      { key: 'peace_bpats_trained', label: 'BPATS' },
       { key: 'peace_firecracker_reg', label: 'Firecracker Regulation' },
     ],
   },
@@ -328,6 +328,31 @@ const youthPoolFields = [
   'youth_lgu_support',
 ]
 
+const educationProvinceRequiredFields = [
+  'educ_school_board',
+  'educ_sef_disbursement',
+  'educ_inclusive_prog',
+  'educ_tesda_training',
+]
+const educationNonProvinceRequiredFields = [
+  'educ_school_board',
+  'educ_sef_disbursement',
+  'educ_inclusive_prog',
+  'educ_early_childhood',
+  'educ_tesda_training',
+]
+
+const peaceProvinceRequiredFields = [
+  'peace_audit_report',
+  'peace_anti_drug_audit',
+  'peace_pnp_logistical',
+]
+const peaceNonProvinceRequiredFields = [
+  ...peaceProvinceRequiredFields,
+  'peace_bpats_trained',
+  'peace_firecracker_reg',
+]
+
 const businessAlternativeField = 'biz_pcci_finalist'
 const businessNonProvinceRequiredFields = [
   'biz_investment_office',
@@ -508,6 +533,26 @@ export function getSGLGRequirementForField(row, areaKey, fieldKey) {
         'Required',
         'Required to pass this Area when PCCI Finalist is not passed.',
       )
+    }
+  }
+
+  if (areaKey === 'educ') {
+    const requiredFields = profile.isProvince
+      ? educationProvinceRequiredFields
+      : educationNonProvinceRequiredFields
+
+    if (requiredFields.includes(fieldKey)) {
+      return makeRequirement(REQUIRED, 'Required', 'Required for Sustainable Education pass.')
+    }
+  }
+
+  if (areaKey === 'peace') {
+    const requiredFields = profile.isProvince
+      ? peaceProvinceRequiredFields
+      : peaceNonProvinceRequiredFields
+
+    if (requiredFields.includes(fieldKey)) {
+      return makeRequirement(REQUIRED, 'Required', 'Required for Safety, Peace and Order pass.')
     }
   }
 

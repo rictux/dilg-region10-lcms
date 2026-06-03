@@ -224,7 +224,7 @@ function getStatusCounts(rows) {
 }
 
 const SGLG_STATUS_SERIES = [
-  { value: 'PASSED', label: 'PASSES' },
+  { value: 'PASSED', label: 'PASSED' },
   { value: 'FAILED', label: 'FAILED' },
 ]
 

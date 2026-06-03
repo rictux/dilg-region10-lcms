@@ -26,7 +26,7 @@ const defaultFilters = {
 }
 
 const sglgStatusSeries = [
-  { label: 'PASSES', value: 'PASSED' },
+  { label: 'PASSED', value: 'PASSED' },
   { label: 'FAILED', value: 'FAILED' },
 ]
 
@@ -402,8 +402,8 @@ function AreaStatusChart({ indicators, showPercentages }) {
       <Chart
         options={{ ...options, xaxis: { ...options.xaxis, categories: indicators.map((item) => item.title) } }}
         series={[
-          { name: showPercentages ? 'Fail Rate' : 'Fail Value', data: failValues },
-          { name: showPercentages ? 'Pass Rate' : 'Pass Value', data: passValues },
+          { name: showPercentages ? 'Fail Rate' : 'Fail', data: failValues },
+          { name: showPercentages ? 'Pass Rate' : 'Pass', data: passValues },
         ]}
         type="bar"
         height={390}
@@ -551,8 +551,8 @@ function SubIndicatorCard({ indicator, showPercentages }) {
       <Chart
         options={{ ...options, xaxis: { ...options.xaxis, categories: subIndicators.map((field) => field.label) } }}
         series={[
-          { name: showPercentages ? 'Fail Rate' : 'Fail Value', data: failValues },
-          { name: showPercentages ? 'Pass Rate' : 'Pass Value', data: passValues },
+          { name: showPercentages ? 'Fail Rate' : 'Fail', data: failValues },
+          { name: showPercentages ? 'Pass Rate' : 'Pass', data: passValues },
         ]}
         type="bar"
         height={Math.max(280, subIndicators.length * 31)}
