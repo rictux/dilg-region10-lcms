@@ -312,7 +312,7 @@ function groupIndicatorsBySubIndicatorCount(indicators) {
     }))
 }
 
-function AreaStatusChart({ indicators, showPercentages }) {
+function AreaStatusChart({ indicators, showPercentages, onAreaSelect }) {
   if (!indicators.length) {
     return <ChartEmptyState title={showPercentages ? '10 Governance LGU Passing Rate' : '10 Governance Areas Rating'} />
   }
@@ -332,10 +332,24 @@ function AreaStatusChart({ indicators, showPercentages }) {
       toolbar: { show: false },
       fontFamily: 'Aptos, Segoe UI, sans-serif',
       stacked: true,
+      events: onAreaSelect
+        ? {
+            dataPointSelection: (_event, _chartContext, config) => {
+              const indicator = indicators[config.dataPointIndex]
+
+              if (indicator) {
+                onAreaSelect(indicator)
+              }
+            },
+          }
+        : {},
     },
     colors: ['#d3212c', '#2f7d64'],
     grid: {
       show: false,
+    },
+    states: {
+      active: { filter: { type: 'none' } },
     },
     plotOptions: {
       bar: {
@@ -398,6 +412,9 @@ function AreaStatusChart({ indicators, showPercentages }) {
         <h3 className="text-sm font-semibold tracking-tightish text-ink">
           {showPercentages ? '10 Governance LGU Passing Rate' : '10 Governance Areas Rating'}
         </h3>
+        {onAreaSelect ? (
+          <span className="text-xs font-medium text-ink-muted">Click an area to view its breakdown</span>
+        ) : null}
       </div>
       <Chart
         options={{ ...options, xaxis: { ...options.xaxis, categories: indicators.map((item) => item.title) } }}
@@ -419,6 +436,7 @@ function SubIndicatorCard({ indicator, showPercentages }) {
   if (!hasData) {
     return (
       <ChartEmptyState
+        id={`sglg-area-${indicator.key}`}
         title={indicator.title}
         message="No assessed indicator values are available for the selected filters."
       />
@@ -524,7 +542,7 @@ function SubIndicatorCard({ indicator, showPercentages }) {
   }
 
   return (
-    <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
+    <Card id={`sglg-area-${indicator.key}`} className="scroll-mt-24 rounded-xl border border-line bg-white p-5 shadow-none ring-0">
       <div className="flex flex-col justify-between gap-2 border-b border-line pb-3 sm:flex-row sm:items-start">
         <div>
           <h3 className="text-sm font-semibold tracking-tightish text-ink">{indicator.title}</h3>
@@ -830,6 +848,16 @@ export default function SGLGDashboard({ initialFilters }) {
     )
   }
 
+  const handleAreaSelect = (indicator) => {
+    if (!indicator?.key) {
+      return
+    }
+
+    document
+      .getElementById(`sglg-area-${indicator.key}`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   const handleRefresh = () => {
     queryClient.invalidateQueries({ queryKey: ['sglg-geo-options'] })
     queryClient.invalidateQueries({ queryKey: ['sglg-dashboard'] })
@@ -892,7 +920,11 @@ export default function SGLGDashboard({ initialFilters }) {
                 colors={['#069c56', '#d3212c']}
               />
             ) : null}
-            <AreaStatusChart indicators={dashboard.indicators} showPercentages={showPercentages} />
+            <AreaStatusChart
+              indicators={dashboard.indicators}
+              showPercentages={showPercentages}
+              onAreaSelect={showPercentages ? undefined : handleAreaSelect}
+            />
           </section>
 
           <section className="space-y-6">
