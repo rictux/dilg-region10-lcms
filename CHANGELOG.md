@@ -6,6 +6,10 @@ Changes are generated from the Git commit log and grouped by commit date.
 
 
 
+
+## 2026-06-03
+
+- `b9706ee` fix: correct labels in SGLG status series and update field names for clarity in indicators
 ## 2026-06-02
 
 - `f523310` feat: enhance business area requirements and improve data handling in SGLG Dashboard
