@@ -9,6 +9,7 @@ Changes are generated from the Git commit log and grouped by commit date.
 
 ## 2026-06-03
 
+- `b718d40` feat: add area selection functionality to AreaStatusChart and enhance ChartEmptyState with id prop
 - `b9706ee` fix: correct labels in SGLG status series and update field names for clarity in indicators
 ## 2026-06-02
 
