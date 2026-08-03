@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import SummaryCard from '../components/cards/SummaryCard'
 import ChartEmptyState from '../components/charts/ChartEmptyState'
 import DocumentCompletionChart from '../components/charts/DocumentCompletionChart'
+import DataCoverageNotice from '../components/common/DataCoverageNotice'
 import LocationFilters from '../components/filters/LocationFilters'
 import ASFMonitoringTable from '../components/tables/ASFMonitoringTable'
 import {
@@ -15,13 +16,18 @@ import {
   useASFMonitoringTable,
 } from '../hooks/useASFMonitoringQueries'
 import { ASF_MONITORING_FIELDS } from '../utils/asfMonitoringAnalytics'
+import { applyCoverage, dataCoverage, getCoverageDefaults } from '../config/dataCoverage'
 
 const moduleTitle = 'ASF Monitoring'
+
+const coverage = dataCoverage['asf-monitoring']
+const coverageDefaults = getCoverageDefaults(coverage)
+
 const defaultFilters = {
   provinceHuc: '',
   cityMunName: '',
-  year: '',
-  month: '',
+  year: coverageDefaults.year,
+  month: coverageDefaults.month,
 }
 
 const fieldColors = ['#0f766e', '#2563eb', '#b45309', '#4f46e5', '#be123c', '#64748b', '#15803d']
@@ -174,10 +180,11 @@ function IndicatorColumnChart({
 export default function ASFMonitoringDashboard({ initialFilters }) {
   const queryClient = useQueryClient()
   const normalizedInitialFilters = useMemo(
-    () => ({
-      ...defaultFilters,
-      ...(initialFilters ?? {}),
-    }),
+    () =>
+      applyCoverage(coverage, {
+        ...defaultFilters,
+        ...(initialFilters ?? {}),
+      }),
     [initialFilters],
   )
   const [filters, setFilters] = useState(normalizedInitialFilters)
@@ -272,7 +279,7 @@ export default function ASFMonitoringDashboard({ initialFilters }) {
     setFilters({
       provinceHuc: nextFilters.provinceHuc ?? '',
       cityMunName: nextFilters.cityMunName ?? '',
-      year: nextFilters.year ?? '',
+      year: nextFilters.year || coverageDefaults.year,
       month: nextFilters.month ?? '',
     })
   }
@@ -298,6 +305,8 @@ export default function ASFMonitoringDashboard({ initialFilters }) {
 
   return (
     <div className="space-y-6">
+      <DataCoverageNotice coverage={coverage} />
+
       <LocationFilters
         filters={filters}
         onChange={handleFilterChange}
@@ -309,6 +318,7 @@ export default function ASFMonitoringDashboard({ initialFilters }) {
         includeBarangay={false}
         includeQuarter={false}
         includeMonth
+        coverage={coverage}
       />
 
       {dashboardError ? <ErrorState message={dashboardError.message} /> : null}

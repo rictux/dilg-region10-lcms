@@ -14,15 +14,20 @@ import { useQueryClient } from '@tanstack/react-query'
 import SummaryCard from '../components/cards/SummaryCard'
 import ChartEmptyState from '../components/charts/ChartEmptyState'
 import ProvinceStatusColumnChart from '../components/charts/ProvinceStatusColumnChart'
+import DataCoverageNotice from '../components/common/DataCoverageNotice'
 import LocationFilters from '../components/filters/LocationFilters'
+import { applyCoverage, dataCoverage, getCoverageDefaults } from '../config/dataCoverage'
 import { useSGLGDashboard, useSGLGGeoOptions, useSGLGTable } from '../hooks/useSGLGQueries'
 import { getSGLGRecordLabel } from '../services/sglgService'
 import { SGLG_INDICATORS } from '../utils/sglgIndicators'
 
+const coverage = dataCoverage.sglg
+const coverageDefaults = getCoverageDefaults(coverage)
+
 const defaultFilters = {
   provinceHuc: '',
   cityMunName: '',
-  year: '',
+  year: coverageDefaults.year,
 }
 
 const sglgStatusSeries = [
@@ -712,10 +717,11 @@ function SGLGTable({
 export default function SGLGDashboard({ initialFilters }) {
   const queryClient = useQueryClient()
   const normalizedInitialFilters = useMemo(
-    () => ({
-      ...defaultFilters,
-      ...(initialFilters ?? {}),
-    }),
+    () =>
+      applyCoverage(coverage, {
+        ...defaultFilters,
+        ...(initialFilters ?? {}),
+      }),
     [initialFilters],
   )
   const [filters, setFilters] = useState(normalizedInitialFilters)
@@ -827,7 +833,7 @@ export default function SGLGDashboard({ initialFilters }) {
     setFilters({
       provinceHuc: nextFilters.provinceHuc ?? '',
       cityMunName: nextFilters.cityMunName ?? '',
-      year: nextFilters.year ?? '',
+      year: nextFilters.year ?? coverageDefaults.year,
     })
   }
 
@@ -866,6 +872,8 @@ export default function SGLGDashboard({ initialFilters }) {
 
   return (
     <div className="space-y-6">
+      <DataCoverageNotice coverage={coverage} />
+
       <LocationFilters
         filters={filters}
         onChange={handleFilterChange}
@@ -876,6 +884,7 @@ export default function SGLGDashboard({ initialFilters }) {
         isRefreshing={isRefreshing}
         includeBarangay={false}
         includeQuarter={false}
+        coverage={coverage}
       />
 
       {dashboardError ? <ErrorState message={dashboardError.message} /> : null}

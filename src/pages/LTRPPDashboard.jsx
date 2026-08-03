@@ -6,6 +6,7 @@ import DocumentCompletionChart from '../components/charts/DocumentCompletionChar
 import QuarterlyTrendChart from '../components/charts/QuarterlyTrendChart'
 import ScoreByProvinceChart from '../components/charts/ScoreByProvinceChart'
 import ProvinceStatusColumnChart from '../components/charts/ProvinceStatusColumnChart'
+import DataCoverageNotice from '../components/common/DataCoverageNotice'
 import LocationFilters from '../components/filters/LocationFilters'
 import LTRPPTable from '../components/tables/LTRPPTable'
 import {
@@ -20,12 +21,16 @@ import {
   useLTRPPTable,
 } from '../hooks/useLTRPPQueries'
 import { LTRPP_MAX_SCORE } from '../utils/ltrppAnalytics'
+import { applyCoverage, dataCoverage, getCoverageDefaults } from '../config/dataCoverage'
+
+const coverage = dataCoverage.ltrpp
+const coverageDefaults = getCoverageDefaults(coverage)
 
 const defaultFilters = {
   provinceHuc: '',
   cityMunName: '',
-  year: '2026',
-  quarter: '',
+  year: coverageDefaults.year,
+  quarter: coverageDefaults.quarter,
 }
 
 const ltrppStatusSeries = [
@@ -93,10 +98,11 @@ function RemarksPanel({ remarks, selectedLguPath }) {
 export default function LTRPPDashboard({ initialFilters }) {
   const queryClient = useQueryClient()
   const normalizedInitialFilters = useMemo(
-    () => ({
-      ...defaultFilters,
-      ...(initialFilters ?? {}),
-    }),
+    () =>
+      applyCoverage(coverage, {
+        ...defaultFilters,
+        ...(initialFilters ?? {}),
+      }),
     [initialFilters],
   )
   const [filters, setFilters] = useState(normalizedInitialFilters)
@@ -209,8 +215,8 @@ export default function LTRPPDashboard({ initialFilters }) {
     setFilters({
       provinceHuc: nextFilters.provinceHuc ?? '',
       cityMunName: nextFilters.cityMunName ?? '',
-      year: nextFilters.year || '2026',
-      quarter: nextFilters.quarter ?? '',
+      year: nextFilters.year || coverageDefaults.year,
+      quarter: nextFilters.quarter || coverageDefaults.quarter,
     })
   }
 
@@ -239,6 +245,8 @@ export default function LTRPPDashboard({ initialFilters }) {
 
   return (
     <div className="space-y-6">
+      <DataCoverageNotice coverage={coverage} />
+
       <LocationFilters
         filters={filters}
         onChange={handleFilterChange}
@@ -248,6 +256,7 @@ export default function LTRPPDashboard({ initialFilters }) {
         onRefresh={handleRefresh}
         isRefreshing={isRefreshing}
         includeBarangay={false}
+        coverage={coverage}
       />
 
       {dashboardError ? <ErrorState message={dashboardError.message} /> : null}

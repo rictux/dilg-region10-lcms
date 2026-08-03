@@ -2,7 +2,9 @@ import { useMemo, useState } from 'react'
 import { Badge, Card } from '@tremor/react'
 import { useQueryClient } from '@tanstack/react-query'
 import SummaryCard from '../components/cards/SummaryCard'
+import DataCoverageNotice from '../components/common/DataCoverageNotice'
 import LocationFilters from '../components/filters/LocationFilters'
+import { dataCoverage, overviewMonths, overviewYears } from '../config/dataCoverage'
 import { useASFMonitoringGeoOptions, useOverviewASFMonitoringStats } from '../hooks/useASFMonitoringQueries'
 import { useGeoOptions, useOverviewBFDPStats, useOverviewLocationStats } from '../hooks/useBFDPQueries'
 import { useOverviewLTRPPStats } from '../hooks/useLTRPPQueries'
@@ -17,6 +19,18 @@ const initialFilters = {
   year: '',
   quarter: '',
   month: '',
+}
+
+// The Overview spans every module, so its period dropdowns offer the union of
+// all module coverage. Each card still states its own range.
+const overviewCoverage = {
+  years: overviewYears,
+  quarters: [],
+  months: overviewMonths,
+}
+
+const overviewCoverageNotice = {
+  note: 'Coverage differs per report — SGLG 2024, BFDP and SKFPD 2025, LPTRPP Q1 2026, Road Classification & Safety Q4 2025, ASF Monitoring March–May 2026.',
 }
 
 const miniStatClassName =
@@ -392,23 +406,6 @@ export default function Overview({ onNavigate }) {
     enabled: isSGLGApplicable,
   })
   const locationCards = locationStatsQuery.data?.cards ?? []
-  const overviewGeoOptions = useMemo(() => {
-    if (!geoOptionsQuery.data) {
-      return geoOptionsQuery.data
-    }
-
-    return {
-      ...geoOptionsQuery.data,
-      years: [
-        ...new Set([
-          2026,
-          2024,
-          ...(geoOptionsQuery.data.years ?? []),
-          ...(asfMonitoringGeoOptionsQuery.data?.years ?? []),
-        ]),
-      ].sort((a, b) => b - a),
-    }
-  }, [asfMonitoringGeoOptionsQuery.data?.years, geoOptionsQuery.data])
 
   const handleRefresh = () => {
     queryClient.invalidateQueries({ queryKey: ['geo-options'] })
@@ -424,10 +421,12 @@ export default function Overview({ onNavigate }) {
 
   return (
     <div className="space-y-6">
+      <DataCoverageNotice coverage={overviewCoverageNotice} />
+
       <LocationFilters
         filters={filters}
         onChange={setFilters}
-        geoOptions={overviewGeoOptions}
+        geoOptions={geoOptionsQuery.data}
         optionsLoading={geoOptionsQuery.isLoading}
         optionError={geoOptionsQuery.error?.message}
         onRefresh={handleRefresh}
@@ -443,6 +442,7 @@ export default function Overview({ onNavigate }) {
           sglgStatsQuery.isFetching
         }
         includeMonth
+        coverage={overviewCoverage}
       />
 
       {locationStatsQuery.error ? (
@@ -473,9 +473,10 @@ export default function Overview({ onNavigate }) {
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {reportModules.map((report) => {
           const reportState = getReportState(report, filters)
+          const reportCoverage = dataCoverage[report.id]
 
           return (
-            <Card key={report.id} className="flex h-full min-h-[306px] flex-col rounded-xl border border-line bg-white p-5 shadow-none ring-0 transition hover:border-line-strong">
+            <Card key={report.id} className="flex h-full min-h-[348px] flex-col rounded-xl border border-line bg-white p-5 shadow-none ring-0 transition hover:border-line-strong">
               <div className={reportHeaderClassName}>
                 <div>
                   <h3 className="text-[15px] font-semibold tracking-tightish text-ink">{report.title}</h3>
@@ -483,6 +484,14 @@ export default function Overview({ onNavigate }) {
                 </div>
                 <Badge color={reportState.color}>{reportState.label}</Badge>
               </div>
+              {reportCoverage ? (
+                <div className="mt-3 flex items-center gap-2 rounded-md border border-audit-500/30 bg-audit-50 px-2.5 py-1.5">
+                  <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-audit-500" />
+                  <span className="text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-audit-700">
+                    Data: {reportCoverage.short}
+                  </span>
+                </div>
+              ) : null}
               {report.id === 'bfdp' || report.id === 'skfpd' || report.id === 'ltrpp' || report.id === 'road-safety' || report.id === 'asf-monitoring' ? (
                 <QuarterlyComplianceCardStats
                   stats={

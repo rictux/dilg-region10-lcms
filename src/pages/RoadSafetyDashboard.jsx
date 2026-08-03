@@ -13,6 +13,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query'
 import SummaryCard from '../components/cards/SummaryCard'
 import ChartEmptyState from '../components/charts/ChartEmptyState'
+import DataCoverageNotice from '../components/common/DataCoverageNotice'
 import LocationFilters from '../components/filters/LocationFilters'
 import RoadSafetyTable from '../components/tables/RoadSafetyTable'
 import {
@@ -22,13 +23,17 @@ import {
   useRoadSafetyRoadCrashByProvince,
   useRoadSafetyTable,
 } from '../hooks/useRoadSafetyQueries'
+import { applyCoverage, dataCoverage, getCoverageDefaults } from '../config/dataCoverage'
 
 const moduleTitle = 'Classification of Roads, Setting of Speed Limits and Collection of Road Crash Data'
 
+const coverage = dataCoverage['road-safety']
+const coverageDefaults = getCoverageDefaults(coverage)
+
 const defaultFilters = {
   provinceHuc: '',
-  year: '',
-  quarter: '',
+  year: coverageDefaults.year,
+  quarter: coverageDefaults.quarter,
 }
 
 function LoadingState() {
@@ -319,10 +324,11 @@ function RoadCrashDataTableChart({ data, selectedProvince = '', onFilterSelect }
 export default function RoadSafetyDashboard({ initialFilters }) {
   const queryClient = useQueryClient()
   const normalizedInitialFilters = useMemo(
-    () => ({
-      ...defaultFilters,
-      ...(initialFilters ?? {}),
-    }),
+    () =>
+      applyCoverage(coverage, {
+        ...defaultFilters,
+        ...(initialFilters ?? {}),
+      }),
     [initialFilters],
   )
   const [filters, setFilters] = useState(normalizedInitialFilters)
@@ -410,8 +416,8 @@ export default function RoadSafetyDashboard({ initialFilters }) {
     setSelectedChartFilter({ province: '', locationLabel: '', fieldKey: '', fieldLabel: '' })
     setFilters({
       provinceHuc: nextFilters.provinceHuc ?? '',
-      year: nextFilters.year ?? '',
-      quarter: nextFilters.quarter ?? '',
+      year: nextFilters.year || coverageDefaults.year,
+      quarter: nextFilters.quarter || coverageDefaults.quarter,
     })
   }
 
@@ -435,6 +441,8 @@ export default function RoadSafetyDashboard({ initialFilters }) {
 
   return (
     <div className="space-y-6">
+      <DataCoverageNotice coverage={coverage} />
+
       <LocationFilters
         filters={filters}
         onChange={handleFilterChange}
@@ -445,6 +453,7 @@ export default function RoadSafetyDashboard({ initialFilters }) {
         isRefreshing={isRefreshing}
         includeBarangay={false}
         includeCity={false}
+        coverage={coverage}
       />
 
       {dashboardError ? <ErrorState message={dashboardError.message} /> : null}

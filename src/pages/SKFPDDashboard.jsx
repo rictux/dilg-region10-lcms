@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Card } from '@tremor/react'
 import { useQueryClient } from '@tanstack/react-query'
 import SummaryCard from '../components/cards/SummaryCard'
+import DataCoverageNotice from '../components/common/DataCoverageNotice'
 import LocationFilters from '../components/filters/LocationFilters'
 import ProvinceStatusColumnChart from '../components/charts/ProvinceStatusColumnChart'
 import DocumentCompletionChart from '../components/charts/DocumentCompletionChart'
@@ -19,13 +20,17 @@ import {
   useSKFPDTable,
 } from '../hooks/useSKFPDQueries'
 import { SKFPD_MAX_SCORE } from '../utils/skfpdAnalytics'
+import { applyCoverage, dataCoverage, getCoverageDefaults } from '../config/dataCoverage'
+
+const coverage = dataCoverage.skfpd
+const coverageDefaults = getCoverageDefaults(coverage)
 
 const defaultFilters = {
   provinceHuc: '',
   cityMunName: '',
   barangayName: '',
-  year: '',
-  quarter: '',
+  year: coverageDefaults.year,
+  quarter: coverageDefaults.quarter,
 }
 
 const skfpdStatusSeries = [
@@ -70,10 +75,11 @@ function EmptyState() {
 export default function SKFPDDashboard({ initialFilters }) {
   const queryClient = useQueryClient()
   const normalizedInitialFilters = useMemo(
-    () => ({
-      ...defaultFilters,
-      ...(initialFilters ?? {}),
-    }),
+    () =>
+      applyCoverage(coverage, {
+        ...defaultFilters,
+        ...(initialFilters ?? {}),
+      }),
     [initialFilters],
   )
   const [filters, setFilters] = useState(normalizedInitialFilters)
@@ -243,6 +249,8 @@ export default function SKFPDDashboard({ initialFilters }) {
 
   return (
     <div className="space-y-6">
+      <DataCoverageNotice coverage={coverage} />
+
       <LocationFilters
         filters={filters}
         onChange={handleFilterChange}
@@ -251,6 +259,7 @@ export default function SKFPDDashboard({ initialFilters }) {
         optionError={geoOptionsQuery.error?.message}
         onRefresh={handleRefresh}
         isRefreshing={isRefreshing}
+        coverage={coverage}
       />
 
       {dashboardError ? <ErrorState message={dashboardError.message} /> : null}

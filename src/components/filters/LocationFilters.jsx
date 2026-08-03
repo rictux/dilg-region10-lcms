@@ -172,10 +172,50 @@ export default function LocationFilters({
   includeCity = true,
   includeQuarter = true,
   includeMonth = false,
+  coverage = null,
 }) {
   const locations = geoOptions?.locations ?? []
   const provinceOptions = geoOptions?.provinces ?? []
-  const yearOptions = geoOptions?.years ?? []
+
+  // Period dropdowns are limited to what the module actually has data for.
+  // When only one value exists it becomes the sole (pre-selected) option and
+  // the "All …" entry is dropped.
+  const yearOptions = useMemo(() => {
+    if (coverage?.years?.length) {
+      return coverage.years
+    }
+
+    return (geoOptions?.years ?? []).map(String)
+  }, [coverage, geoOptions?.years])
+
+  const quarterOptions = useMemo(() => {
+    if (!coverage?.quarters?.length) {
+      return quarters
+    }
+
+    return quarters.filter((quarter) => coverage.quarters.includes(quarter.value))
+  }, [coverage])
+
+  const monthOptions = useMemo(() => {
+    if (!coverage?.months?.length) {
+      return months
+    }
+
+    return months.filter((month) => coverage.months.includes(month.value))
+  }, [coverage])
+
+  const showAllYears = yearOptions.length !== 1
+  const showAllQuarters = quarterOptions.length !== 1
+  const showAllMonths = monthOptions.length !== 1
+
+  const periodDefaults = useMemo(
+    () => ({
+      year: yearOptions.length === 1 ? yearOptions[0] : '',
+      quarter: quarterOptions.length === 1 ? quarterOptions[0].value : '',
+      month: monthOptions.length === 1 ? monthOptions[0].value : '',
+    }),
+    [monthOptions, quarterOptions, yearOptions],
+  )
 
   const cityOptions = useMemo(() => {
     const filteredLocations = filters.provinceHuc
@@ -246,10 +286,10 @@ export default function LocationFilters({
               onChange({
                 provinceHuc: '',
                 cityMunName: '',
-                year: '',
+                year: periodDefaults.year,
                 ...(includeBarangay ? { barangayName: '' } : {}),
-                ...(includeQuarter ? { quarter: '' } : {}),
-                ...(includeMonth ? { month: '' } : {}),
+                ...(includeQuarter ? { quarter: periodDefaults.quarter } : {}),
+                ...(includeMonth ? { month: periodDefaults.month } : {}),
               })
             }
             className="rounded-md border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:bg-zinc-50 hover:text-ink"
@@ -321,7 +361,7 @@ export default function LocationFilters({
         ) : null}
 
         <SelectField label="Year" value={filters.year} onChange={(value) => updateFilter('year', value)}>
-          <option value="">All Years</option>
+          {showAllYears ? <option value="">All Years</option> : null}
           {yearOptions.map((year) => (
             <option key={year} value={year}>
               {year}
@@ -336,8 +376,8 @@ export default function LocationFilters({
             disabled={Boolean(filters.month)}
             onChange={(value) => updateFilter('quarter', value)}
           >
-            <option value="">All Quarters</option>
-            {quarters.map((quarter) => (
+            {showAllQuarters ? <option value="">All Quarters</option> : null}
+            {quarterOptions.map((quarter) => (
               <option key={quarter.value} value={quarter.value}>
                 {quarter.label}
               </option>
@@ -352,8 +392,8 @@ export default function LocationFilters({
             disabled={Boolean(filters.quarter)}
             onChange={(value) => updateFilter('month', value)}
           >
-            <option value="">All Months</option>
-            {months.map((month) => (
+            {showAllMonths ? <option value="">All Months</option> : null}
+            {monthOptions.map((month) => (
               <option key={month.value} value={month.value}>
                 {month.label}
               </option>
