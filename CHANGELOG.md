@@ -7,6 +7,10 @@ Changes are generated from the Git commit log and grouped by commit date.
 
 
 
+
+## 2026-08-03
+
+- `566a1a7` feat: add data coverage functionality with coverage notice component and update filters across dashboards
 ## 2026-06-03
 
 - `b718d40` feat: add area selection functionality to AreaStatusChart and enhance ChartEmptyState with id prop
