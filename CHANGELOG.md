@@ -10,6 +10,7 @@ Changes are generated from the Git commit log and grouped by commit date.
 
 ## 2026-08-03
 
+- `6dcc86b` feat: enhance DataCoverageNotice with label prop and update coverage notes for clarity
 - `566a1a7` feat: add data coverage functionality with coverage notice component and update filters across dashboards
 ## 2026-06-03
 
