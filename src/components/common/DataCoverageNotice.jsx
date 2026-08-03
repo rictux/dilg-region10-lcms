@@ -1,4 +1,8 @@
-export default function DataCoverageNotice({ coverage, className = '' }) {
+export default function DataCoverageNotice({
+  coverage,
+  label = 'Reporting Period Covered',
+  className = '',
+}) {
   if (!coverage?.note) {
     return null
   }
@@ -6,18 +10,15 @@ export default function DataCoverageNotice({ coverage, className = '' }) {
   return (
     <div
       role="status"
-      className={`flex items-start gap-2.5 rounded-lg border border-audit-500/30 bg-audit-50 px-3.5 py-2.5 ${className}`}
+      className={`flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-audit-500/30 bg-audit-50 px-3.5 py-2.5 ${className}`}
     >
-      <span
-        aria-hidden
-        className="mt-[1px] flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-audit-500 text-[10px] font-bold leading-none text-white"
-      >
-        !
+      <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-audit-500">
+        {label}
       </span>
-      <p className="text-[13px] leading-relaxed text-audit-700">
-        <span className="font-semibold uppercase tracking-[0.08em]">Data coverage:</span>{' '}
+      <span aria-hidden className="hidden h-3.5 w-px bg-audit-500/30 sm:block" />
+      <span className="text-[13px] font-semibold leading-relaxed tracking-tightish text-audit-700">
         {coverage.note}
-      </p>
+      </span>
     </div>
   )
 }

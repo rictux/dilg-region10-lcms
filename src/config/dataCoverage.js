@@ -1,7 +1,10 @@
 /**
- * Single source of truth for the period range each report module actually has
- * data for. Filter dropdowns are restricted to these values, and the highlight
- * notice on every dashboard (and the Overview cards) is rendered from `note`.
+ * Single source of truth for the reporting period each module carries data for.
+ * Filter dropdowns are restricted to these values, and the coverage label shown
+ * on every dashboard (and on the Overview cards) is rendered from `note`/`period`.
+ *
+ * `note`   – full phrasing for the dashboard banner
+ * `period` – abbreviated phrasing for the compact Overview card chip
  *
  * Values are strings so they match the `<select>` values used by LocationFilters.
  * An empty array means "no restriction" for that period type.
@@ -13,8 +16,8 @@ const coverage = {
     years: ['2024'],
     quarters: [],
     months: [],
-    note: 'Data available for 2024 only.',
-    short: '2024 only',
+    note: 'Calendar Year 2024',
+    period: 'CY 2024',
   },
   bfdp: {
     id: 'bfdp',
@@ -22,8 +25,8 @@ const coverage = {
     years: ['2025'],
     quarters: [],
     months: [],
-    note: 'Data available for 2025 only.',
-    short: '2025 only',
+    note: 'Calendar Year 2025',
+    period: 'CY 2025',
   },
   skfpd: {
     id: 'skfpd',
@@ -31,8 +34,8 @@ const coverage = {
     years: ['2025'],
     quarters: [],
     months: [],
-    note: 'Data available for 2025 only.',
-    short: '2025 only',
+    note: 'Calendar Year 2025',
+    period: 'CY 2025',
   },
   ltrpp: {
     id: 'ltrpp',
@@ -40,8 +43,8 @@ const coverage = {
     years: ['2026'],
     quarters: ['1'],
     months: [],
-    note: 'Data available for the 1st Quarter of 2026 only.',
-    short: 'Q1 2026 only',
+    note: 'First Quarter, Calendar Year 2026',
+    period: 'Q1 CY 2026',
   },
   'road-safety': {
     id: 'road-safety',
@@ -49,8 +52,8 @@ const coverage = {
     years: ['2025'],
     quarters: ['4'],
     months: [],
-    note: 'Data available for the 4th Quarter of 2025 only.',
-    short: 'Q4 2025 only',
+    note: 'Fourth Quarter, Calendar Year 2025',
+    period: 'Q4 CY 2025',
   },
   'asf-monitoring': {
     id: 'asf-monitoring',
@@ -58,8 +61,8 @@ const coverage = {
     years: ['2026'],
     quarters: [],
     months: ['3', '4', '5'],
-    note: 'Data available for March, April, and May 2026 only.',
-    short: 'Mar–May 2026 only',
+    note: 'March to May, Calendar Year 2026',
+    period: 'March–May CY 2026',
   },
 }
 

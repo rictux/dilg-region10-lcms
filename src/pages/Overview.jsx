@@ -30,7 +30,7 @@ const overviewCoverage = {
 }
 
 const overviewCoverageNotice = {
-  note: 'Coverage differs per report — SGLG 2024, BFDP and SKFPD 2025, LPTRPP Q1 2026, Road Classification & Safety Q4 2025, ASF Monitoring March–May 2026.',
+  note: 'SGLG — CY 2024  ·  BFDP and SKFPD — CY 2025  ·  LPTRPP — Q1 CY 2026  ·  Road Classification and Safety — Q4 CY 2025  ·  ASF Monitoring — March to May CY 2026',
 }
 
 const miniStatClassName =
@@ -421,7 +421,7 @@ export default function Overview({ onNavigate }) {
 
   return (
     <div className="space-y-6">
-      <DataCoverageNotice coverage={overviewCoverageNotice} />
+      <DataCoverageNotice coverage={overviewCoverageNotice} label="Reporting Periods Covered" />
 
       <LocationFilters
         filters={filters}
@@ -476,7 +476,7 @@ export default function Overview({ onNavigate }) {
           const reportCoverage = dataCoverage[report.id]
 
           return (
-            <Card key={report.id} className="flex h-full min-h-[348px] flex-col rounded-xl border border-line bg-white p-5 shadow-none ring-0 transition hover:border-line-strong">
+            <Card key={report.id} className="flex h-full min-h-[362px] flex-col rounded-xl border border-line bg-white p-5 shadow-none ring-0 transition hover:border-line-strong">
               <div className={reportHeaderClassName}>
                 <div>
                   <h3 className="text-[15px] font-semibold tracking-tightish text-ink">{report.title}</h3>
@@ -485,11 +485,13 @@ export default function Overview({ onNavigate }) {
                 <Badge color={reportState.color}>{reportState.label}</Badge>
               </div>
               {reportCoverage ? (
-                <div className="mt-3 flex items-center gap-2 rounded-md border border-audit-500/30 bg-audit-50 px-2.5 py-1.5">
-                  <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-audit-500" />
-                  <span className="text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-audit-700">
-                    Data: {reportCoverage.short}
-                  </span>
+                <div className="mt-3 rounded-md border border-audit-500/30 bg-audit-50 px-2.5 py-1.5">
+                  <div className="text-[9px] font-semibold uppercase leading-3 tracking-[0.14em] text-audit-500">
+                    Period Covered
+                  </div>
+                  <div className="mt-0.5 text-[12px] font-semibold leading-4 tracking-tightish text-audit-700">
+                    {reportCoverage.period}
+                  </div>
                 </div>
               ) : null}
               {report.id === 'bfdp' || report.id === 'skfpd' || report.id === 'ltrpp' || report.id === 'road-safety' || report.id === 'asf-monitoring' ? (
