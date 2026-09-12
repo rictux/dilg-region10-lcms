@@ -8,7 +8,9 @@ const missingSupabaseConfigMessage =
 // Read-only dashboard client. Configure Supabase RLS policies before exposing data publicly.
 export const supabase =
   supabaseUrl && supabaseKey
-    ? createClient(supabaseUrl, supabaseKey)
+    ? createClient(supabaseUrl, supabaseKey, {
+        db: { schema: "system_lcms" },
+      })
     : {
         from() {
           throw new Error(missingSupabaseConfigMessage);
