@@ -8,6 +8,14 @@ Changes are generated from the Git commit log and grouped by commit date.
 
 
 
+
+
+## 2026-10-01
+
+- `b8d4bc7` Merge branch 'main' of https://github.com/iamrudyard/r10-dashboard
+## 2026-09-12
+
+- `635bf30` feat: configure Supabase client with database schema
 ## 2026-08-03
 
 - `6dcc86b` feat: enhance DataCoverageNotice with label prop and update coverage notes for clarity
