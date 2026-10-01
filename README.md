@@ -1,4 +1,4 @@
-# Region 10 Analytics Dashboard
+# Region 10 Reports Analytics Dashboard
 
 React + Vite dashboard for Region 10 government report analytics. The app uses Supabase report tables joined with `lib_geographic_units` to provide overview cards, location filters, score charts, status/rating charts, document completion charts, trends, and detailed records.
 
