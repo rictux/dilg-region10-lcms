@@ -12,6 +12,7 @@ Changes are generated from the Git commit log and grouped by commit date.
 
 ## 2026-10-01
 
+- `6e20776` docs: update dashboard title
 - `b8d4bc7` Merge branch 'main' of https://github.com/iamrudyard/r10-dashboard
 ## 2026-09-12
 
