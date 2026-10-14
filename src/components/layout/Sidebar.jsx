@@ -24,12 +24,12 @@ export default function Sidebar({ activePage, onNavigate, isOpen, onClose }) {
       >
         <div className="px-5 py-5">
           <div className="flex items-center gap-2.5">
-            <span
+            <img
+              src="/dilg-seal.png"
+              alt=""
               aria-hidden
-              className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-civic-700 text-[11px] font-semibold tracking-tight text-white"
-            >
-              LC
-            </span>
+              className="h-8 w-8 shrink-0 rounded-full object-contain"
+            />
             <div className="leading-tight">
               <div className="text-[13px] font-semibold tracking-tight text-ink">LCMS</div>
               <div className="text-[11px] font-medium text-ink-muted">LGU Compliance Monitoring</div>

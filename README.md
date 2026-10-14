@@ -13,7 +13,9 @@ React + Vite dashboard for Region 10 government report analytics. The app uses S
 ## Key Features
 
 - Overview page with Province/HUC, City/Municipality, Barangay, Year, Quarter, and Month filters.
-- Overview report cards arranged as SGLG, BFDP, SKFPD, LPTRPP, and Other, with four cards per row on wide screens.
+- Overview active-filter chips: each applied filter is shown as a removable chip (removing a location also clears the locations nested under it), plus a Clear all action.
+- Overview Compliance snapshot: one bar per report showing the share of reported LGUs in the top status (fully compliant / passed / complete) for the current filters, with the strongest and weakest report called out and the last refresh time. Rows are clickable and open the report.
+- Overview report cards (SGLG, BFDP, SKFPD, LPTRPP, Road Class & Safety, ASF Monitoring; three per row on wide screens) showing a headline rate, a stacked status bar with counts and percentages, skeleton loading states, per-card error messages, and guidance on which filter to change when a report does not apply.
 - Shared location filters with searchable City/Municipality and Barangay dropdowns.
 - Province/HUC, City/Municipality, Barangay, Year, and Quarter filtering for quarterly report dashboards.
 - SGLG dashboard with annual filters, overall rating summaries, rating by Province/HUC, governance area charts, sub-indicator charts, and detailed records.
@@ -78,6 +80,13 @@ src/
   components/
     cards/
       SummaryCard.jsx
+    common/
+      DataCoverageNotice.jsx
+      Skeleton.jsx
+    overview/
+      ActiveFilterChips.jsx
+      RegionalSnapshot.jsx
+      StatusBreakdown.jsx
     charts/
       ChartEmptyState.jsx
       DocumentCompletionChart.jsx
