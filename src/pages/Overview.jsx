@@ -1,9 +1,13 @@
 import { useMemo, useState } from 'react'
-import { Badge, Card } from '@tremor/react'
+import { Card } from '@tremor/react'
 import { useQueryClient } from '@tanstack/react-query'
 import SummaryCard from '../components/cards/SummaryCard'
 import DataCoverageNotice from '../components/common/DataCoverageNotice'
+import Skeleton from '../components/common/Skeleton'
 import LocationFilters from '../components/filters/LocationFilters'
+import ActiveFilterChips from '../components/overview/ActiveFilterChips'
+import RegionalSnapshot from '../components/overview/RegionalSnapshot'
+import StatusBreakdown, { toneStyles } from '../components/overview/StatusBreakdown'
 import { dataCoverage, overviewMonths, overviewYears } from '../config/dataCoverage'
 import { useASFMonitoringGeoOptions, useOverviewASFMonitoringStats } from '../hooks/useASFMonitoringQueries'
 import { useGeoOptions, useOverviewBFDPStats, useOverviewLocationStats } from '../hooks/useBFDPQueries'
@@ -33,104 +37,9 @@ const overviewCoverageNotice = {
   note: 'SGLG — CY 2024  ·  BFDP and SKFPD — CY 2025  ·  LPTRPP — Q1 CY 2026  ·  Road Classification and Safety — Q4 CY 2025  ·  ASF Monitoring — March to May CY 2026',
 }
 
-const miniStatClassName =
-  'flex min-h-[74px] flex-col rounded-lg border border-line bg-zinc-50/60 px-3 py-2'
-
-const miniStatLabelClassName =
-  'flex min-h-[28px] items-start text-[10px] font-semibold uppercase leading-4 tracking-[0.14em] text-ink-muted'
-
-const miniStatValueClassName = 'mt-auto font-num text-[15px] font-semibold tracking-tightish text-ink'
-
-const reportHeaderClassName = 'flex min-h-[78px] items-start justify-between gap-3'
-
-const statsGridClassName = 'mt-4 grid min-h-[74px] gap-2 sm:grid-cols-3'
-
-const statsMessageClassName =
-  'mt-4 flex min-h-[74px] items-center rounded-lg border border-line bg-zinc-50/60 px-3 py-2 text-[13px] text-ink-muted'
-
-const reportModules = [
-  {
-    id: 'sglg',
-    title: 'SGLG',
-    description: 'Seal of Good Local Governance',
-    frequency: 'Annual',
-    status: 'Live',
-    color: 'emerald',
-    periods: ['annual'],
-  },
-  {
-    id: 'bfdp',
-    title: 'BFDP',
-    description: 'Barangay Full Disclosure Policy',
-    frequency: 'Quarterly',
-    status: 'Live',
-    color: 'emerald',
-    periods: ['quarter'],
-  },
-  {
-    id: 'skfpd',
-    title: 'SKFPD',
-    description: 'SK Full Public Disclosure',
-    frequency: 'Quarterly',
-    status: 'Live',
-    color: 'emerald',
-    periods: ['quarter'],
-  },
-  {
-    id: 'ltrpp',
-    title: 'LPTRPP',
-    description: 'Local Public Transport Route Plan Preparation',
-    frequency: 'Quarterly',
-    status: 'Live',
-    color: 'emerald',
-    periods: ['quarter'],
-  },
-  {
-    id: 'road-safety',
-    title: 'Classification of Roads, Setting of Speed Limits and Collection of Road Crash Data',
-    description: 'Road safety compliance and ordinance tracking',
-    frequency: 'Quarterly',
-    status: 'Live',
-    color: 'emerald',
-    periods: ['quarter'],
-  },
-  {
-    id: 'asf-monitoring',
-    title: 'ASF Monitoring',
-    description: 'African Swine Fever monthly monitoring indicators',
-    frequency: 'Monthly',
-    status: 'Live',
-    color: 'emerald',
-    periods: ['month'],
-  },
-]
-
-function getReportState(report, filters) {
-  const selectedPeriod = filters.month ? 'month' : filters.quarter ? 'quarter' : ''
-
-  if (selectedPeriod && !report.periods.includes(selectedPeriod)) {
-    return {
-      label: 'Not applicable',
-      color: 'slate',
-      isApplicable: false,
-    }
-  }
-
-  return {
-    label: report.status,
-    color: report.color,
-    isApplicable: true,
-  }
-}
-
-function SelectionState() {
-  return (
-    <Card className="rounded-xl border border-dashed border-line bg-white p-10 text-center shadow-none ring-0">
-      <div className="text-[15px] font-semibold tracking-tightish text-ink">Select a location</div>
-      <p className="mt-2 text-[13px] text-ink-muted">Population and LGU profile cards will appear here.</p>
-    </Card>
-  )
-}
+// ---------------------------------------------------------------------------
+// Filter payloads handed to each module dashboard when a card is opened
+// ---------------------------------------------------------------------------
 
 function getQuarterlyFilterPayload(filters) {
   return {
@@ -177,6 +86,109 @@ function getAnnualFilterPayload(filters) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Report modules. `segments` maps the status cards each overview service
+// returns onto good / warn / bad tones; any other card is shown as an extra.
+// ---------------------------------------------------------------------------
+
+const COMPLIANCE_SEGMENTS = [
+  { match: 'Compliance', title: 'Compliant', tone: 'good' },
+  { match: 'Non Compliance', title: 'Non-compliant', tone: 'bad' },
+]
+
+const DISCLOSURE_SEGMENTS = [
+  { match: 'Full Compliant', title: 'Full Compliant', tone: 'good' },
+  { match: 'Partial Compliant', title: 'Partial Compliant', tone: 'warn' },
+  { match: 'None Compliant', title: 'None Compliant', tone: 'bad' },
+]
+
+const reportModules = [
+  {
+    id: 'sglg',
+    title: 'SGLG',
+    shortTitle: 'SGLG',
+    description: 'Seal of Good Local Governance',
+    frequency: 'Annual',
+    periods: ['annual'],
+    segments: [
+      { match: 'Passed', title: 'Passed', tone: 'good' },
+      { match: 'Failed', title: 'Failed', tone: 'bad' },
+    ],
+    goodLabel: 'passed',
+    goodShort: 'passed',
+    getPayload: getAnnualFilterPayload,
+  },
+  {
+    id: 'bfdp',
+    title: 'BFDP',
+    shortTitle: 'BFDP',
+    description: 'Barangay Full Disclosure Policy',
+    frequency: 'Quarterly',
+    periods: ['quarter'],
+    segments: DISCLOSURE_SEGMENTS,
+    goodLabel: 'fully compliant',
+    goodShort: 'full',
+    getPayload: getQuarterlyFilterPayload,
+  },
+  {
+    id: 'skfpd',
+    title: 'SKFPD',
+    shortTitle: 'SKFPD',
+    description: 'SK Full Public Disclosure',
+    frequency: 'Quarterly',
+    periods: ['quarter'],
+    segments: DISCLOSURE_SEGMENTS,
+    goodLabel: 'fully compliant',
+    goodShort: 'full',
+    getPayload: getQuarterlyFilterPayload,
+  },
+  {
+    id: 'ltrpp',
+    title: 'LPTRPP',
+    shortTitle: 'LPTRPP',
+    description: 'Local Public Transport Route Plan Preparation',
+    frequency: 'Quarterly',
+    periods: ['quarter'],
+    segments: COMPLIANCE_SEGMENTS,
+    goodLabel: 'compliant',
+    goodShort: 'compliant',
+    getPayload: getLTRPPFilterPayload,
+  },
+  {
+    id: 'road-safety',
+    title: 'Classification of Roads, Setting of Speed Limits and Collection of Road Crash Data',
+    shortTitle: 'Road Class & Safety',
+    description: 'Road safety compliance and ordinance tracking',
+    frequency: 'Quarterly',
+    periods: ['quarter'],
+    segments: COMPLIANCE_SEGMENTS,
+    goodLabel: 'compliant',
+    goodShort: 'compliant',
+    getPayload: getRoadSafetyFilterPayload,
+  },
+  {
+    id: 'asf-monitoring',
+    title: 'ASF Monitoring',
+    shortTitle: 'ASF Monitoring',
+    description: 'African Swine Fever monthly monitoring indicators',
+    frequency: 'Monthly',
+    periods: ['month'],
+    segments: [
+      { match: 'Complete', title: 'Complete', tone: 'good' },
+      { match: 'Incomplete', title: 'Incomplete', tone: 'bad' },
+    ],
+    goodLabel: 'complete',
+    goodShort: 'complete',
+    getPayload: getASFMonitoringFilterPayload,
+  },
+]
+
+function isPeriodApplicable(report, filters) {
+  const selectedPeriod = filters.month ? 'month' : filters.quarter ? 'quarter' : ''
+
+  return !selectedPeriod || report.periods.includes(selectedPeriod)
+}
+
 function formatRating(value) {
   const normalized = typeof value === 'string' ? value.toLowerCase() : ''
 
@@ -191,116 +203,263 @@ function formatRating(value) {
   return 'No Rating'
 }
 
-function QuarterlyComplianceCardStats({
-  stats,
-  isLoading,
-  isApplicable,
-  notApplicableMessage = 'Not applicable for Month filter.',
-}) {
+function toCount(value) {
+  const number = Number(value)
+
+  return Number.isFinite(number) ? number : 0
+}
+
+function getStatusTone(status) {
+  const text = String(status ?? '').toLowerCase()
+
+  if (text.includes('partial')) return 'warn'
+  if (/(none|non|fail|incomplete|not )/.test(text)) return 'bad'
+  if (/(full|pass|complete|complian)/.test(text)) return 'good'
+
+  return 'neutral'
+}
+
+// SGLG's service returns a richer object; reshape it to the common card shape.
+function adaptSGLGStats(stats, isSelectedLgu) {
+  if (!stats) {
+    return null
+  }
+
+  if (!stats.totalRecords) {
+    return { mode: 'message', message: 'No SGLG data found for the selected filters.' }
+  }
+
+  if (isSelectedLgu) {
+    return {
+      mode: 'status',
+      status: formatRating(stats.latestOverallRating),
+      cards: [
+        { title: 'Areas Passed', value: stats.areaPassTotal },
+        { title: 'Areas Failed', value: stats.areaFailTotal },
+      ],
+    }
+  }
+
+  return {
+    mode: 'counts',
+    cards: [
+      { title: 'Passed', value: stats.passedCount },
+      { title: 'Failed', value: stats.failedCount },
+    ],
+  }
+}
+
+/** Turns a module's query + applicability into one renderable state. */
+function buildModuleView(module, { query, stats, isApplicable, notApplicableMessage }) {
   if (!isApplicable) {
-    return (
-      <div className={statsMessageClassName}>
-        {notApplicableMessage}
-      </div>
-    )
+    return { state: 'na', message: notApplicableMessage, shortMessage: 'Not applicable' }
   }
 
-  if (isLoading) {
-    return (
-      <div className={statsGridClassName}>
-        {['Full Compliant', 'Partial Compliant', 'None Compliant'].map((title) => (
-          <div key={title} className={miniStatClassName}>
-            <div className={miniStatLabelClassName}>
-              {title}
-            </div>
-            <div className={miniStatValueClassName}>Loading...</div>
-          </div>
-        ))}
-      </div>
-    )
+  if (query.isLoading) {
+    return { state: 'loading' }
   }
 
-  if (stats?.mode === 'status') {
-    return (
-      <div className={`mt-4 ${miniStatClassName}`}>
-        <div className={miniStatLabelClassName}>
-          Status
+  if (query.error) {
+    return {
+      state: 'error',
+      message: query.error.message || 'Unable to load this report.',
+      shortMessage: 'Failed to load',
+    }
+  }
+
+  if (!stats || stats.mode === 'message') {
+    return {
+      state: 'empty',
+      message: stats?.message || 'No records for the selected filters.',
+      shortMessage: 'No records',
+    }
+  }
+
+  if (stats.mode === 'status') {
+    return {
+      state: 'status',
+      status: stats.status || 'N/A',
+      tone: getStatusTone(stats.status),
+      extras: stats.cards ?? [],
+    }
+  }
+
+  const cards = stats.cards ?? []
+  const findCard = (title) => cards.find((card) => card.title.toLowerCase() === title.toLowerCase())
+  const segments = module.segments.map((segment) => ({
+    ...segment,
+    value: toCount(findCard(segment.match)?.value),
+  }))
+  const extras = cards.filter(
+    (card) => !module.segments.some((segment) => segment.match.toLowerCase() === card.title.toLowerCase()),
+  )
+  const total = segments.reduce((sum, segment) => sum + segment.value, 0)
+
+  if (!total) {
+    return { state: 'empty', message: 'No records for the selected filters.', shortMessage: 'No records', extras }
+  }
+
+  const good = segments.find((segment) => segment.tone === 'good')?.value ?? 0
+
+  return {
+    state: 'counts',
+    segments,
+    extras,
+    total,
+    rate: Math.round((good / total) * 100),
+    goodLabel: module.goodLabel,
+    goodShort: module.goodShort,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Presentational pieces
+// ---------------------------------------------------------------------------
+
+function ExtraStats({ extras }) {
+  if (!extras?.length) {
+    return null
+  }
+
+  return (
+    <dl className="mt-3 grid grid-cols-2 gap-2">
+      {extras.map((extra) => (
+        <div key={extra.title} className="rounded-lg border border-line bg-zinc-50/60 px-3 py-2">
+          <dt className="text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-muted">{extra.title}</dt>
+          <dd className="mt-0.5 font-num text-[15px] font-semibold text-ink">{extra.value ?? 'N/A'}</dd>
         </div>
-        <div className={miniStatValueClassName}>{stats.status}</div>
+      ))}
+    </dl>
+  )
+}
+
+function ModuleBody({ view }) {
+  if (view.state === 'loading') {
+    return (
+      <div className="space-y-3" aria-busy="true" aria-label="Loading report">
+        <Skeleton className="h-8 w-24" />
+        <Skeleton className="h-2.5 w-full rounded-full" />
+        <Skeleton className="h-3.5 w-full" />
+        <Skeleton className="h-3.5 w-5/6" />
+        <Skeleton className="h-3.5 w-4/6" />
+      </div>
+    )
+  }
+
+  if (view.state === 'error') {
+    return (
+      <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2.5 text-[13px] text-rose-700">
+        <div className="font-semibold">Couldn’t load this report</div>
+        <div className="mt-0.5 break-words text-rose-700/80">{view.message}</div>
+      </div>
+    )
+  }
+
+  if (view.state === 'na' || view.state === 'empty') {
+    return (
+      <div className="flex min-h-[96px] items-center rounded-lg border border-dashed border-line bg-zinc-50/60 px-3 py-2 text-[13px] leading-relaxed text-ink-muted">
+        {view.message}
+      </div>
+    )
+  }
+
+  if (view.state === 'status') {
+    const tone = toneStyles[view.tone] ?? toneStyles.neutral
+
+    return (
+      <div>
+        <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-muted">Current status</div>
+        <div className={`mt-2 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[14px] font-semibold ${tone.soft}`}>
+          <span aria-hidden className={`h-2 w-2 rounded-full ${tone.dot}`} />
+          {view.status}
+        </div>
+        <ExtraStats extras={view.extras} />
       </div>
     )
   }
 
   return (
-    <div className={statsGridClassName}>
-      {(stats?.cards ?? []).map((card) => (
-        <div key={card.title} className={miniStatClassName}>
-          <div className={miniStatLabelClassName}>
-            {card.title}
-          </div>
-          <div className={miniStatValueClassName}>{card.value}</div>
-        </div>
-      ))}
+    <div>
+      <div className="mb-3 flex items-baseline gap-2">
+        <span className="font-num text-[30px] font-semibold leading-none tracking-tighter2 text-ink">{view.rate}%</span>
+        <span className="text-[13px] text-ink-muted">
+          {view.goodLabel} · <span className="font-num">{view.total.toLocaleString()}</span> reported
+        </span>
+      </div>
+      <StatusBreakdown segments={view.segments} total={view.total} />
+      <ExtraStats extras={view.extras} />
     </div>
   )
 }
 
-function SGLGCardStats({ stats, isLoading, isApplicable, isSelectedLgu }) {
-  if (!isApplicable) {
-    return (
-      <div className={statsMessageClassName}>
-        Not applicable for Barangay, Quarter, or Month filter.
-      </div>
-    )
-  }
-
-  if (isLoading) {
-    return (
-      <div className={statsGridClassName}>
-        {['Passed', 'Failed', 'Rate'].map((title) => (
-          <div key={title} className={miniStatClassName}>
-            <div className={miniStatLabelClassName}>
-              {title}
-            </div>
-            <div className={miniStatValueClassName}>Loading...</div>
-          </div>
-        ))}
-      </div>
-    )
-  }
-
-  if (!stats?.totalRecords) {
-    return (
-      <div className={statsMessageClassName}>
-        No SGLG data found for the selected filters.
-      </div>
-    )
-  }
-
-  const cards = isSelectedLgu
-    ? [
-        { title: 'Overall', value: formatRating(stats.latestOverallRating) },
-        { title: 'Area Passed', value: stats.areaPassTotal },
-        { title: 'Area Failed', value: stats.areaFailTotal },
-      ]
-    : [
-        { title: 'PASSED', value: stats.passedCount },
-        { title: 'FAILED', value: stats.failedCount },
-      ]
+function ReportCard({ module, view, isApplicable, canOpen, onOpen }) {
+  const coverage = dataCoverage[module.id]
 
   return (
-    <div className={statsGridClassName}>
-      {cards.map((card) => (
-        <div key={card.title} className={miniStatClassName}>
-          <div className={miniStatLabelClassName}>
-            {card.title}
-          </div>
-          <div className={miniStatValueClassName}>{card.value}</div>
+    <Card className="flex h-full flex-col rounded-xl border border-line bg-white p-5 shadow-none ring-0 transition hover:border-line-strong hover:shadow-lift">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="text-[15px] font-semibold leading-snug tracking-tightish text-ink" title={module.title}>
+            {module.title}
+          </h3>
+          <p className="mt-1 text-[13px] leading-relaxed text-ink-muted">{module.description}</p>
         </div>
-      ))}
+        <span
+          className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${
+            isApplicable
+              ? 'border-civic-200 bg-civic-50 text-civic-800'
+              : 'border-line bg-zinc-50 text-ink-muted'
+          }`}
+        >
+          <span aria-hidden className={`h-1.5 w-1.5 rounded-full ${isApplicable ? 'bg-civic-600' : 'bg-zinc-300'}`} />
+          {isApplicable ? 'Live' : 'Not applicable'}
+        </span>
+      </div>
+
+      {coverage ? (
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-[12px]">
+          <span className="inline-flex items-center gap-1.5 rounded-md border border-audit-500/30 bg-audit-50 px-2 py-0.5 font-semibold text-audit-700">
+            <span className="text-[9px] uppercase tracking-[0.14em] text-audit-500">Period</span>
+            {coverage.period}
+          </span>
+          <span className="rounded-md border border-line bg-zinc-50 px-2 py-0.5 font-medium text-ink-muted">
+            {module.frequency}
+          </span>
+        </div>
+      ) : null}
+
+      <div className="mt-4 flex-1">
+        <ModuleBody view={view} />
+      </div>
+
+      <div className="mt-5 flex items-center justify-end border-t border-line pt-4">
+        <button
+          type="button"
+          onClick={onOpen}
+          disabled={!canOpen}
+          className="inline-flex items-center gap-1 rounded-md bg-civic-700 px-3.5 py-1.5 text-[13px] font-medium text-white transition hover:bg-civic-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-civic-500/40 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-ink-subtle"
+        >
+          Open dashboard <span aria-hidden>→</span>
+        </button>
+      </div>
+    </Card>
+  )
+}
+
+function SelectionHint() {
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-dashed border-line bg-white px-4 py-3 text-[13px] text-ink-muted">
+      <span aria-hidden className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-civic-50 text-civic-700">
+        ⌖
+      </span>
+      Pick a Province/HUC, City/Municipality or Barangay above to see its population and LGU profile.
     </div>
   )
 }
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
 
 export default function Overview({ onNavigate }) {
   const queryClient = useQueryClient()
@@ -314,17 +473,7 @@ export default function Overview({ onNavigate }) {
     }),
     [filters.provinceHuc, filters.cityMunName, filters.barangayName],
   )
-  const bfdpStatsFilters = useMemo(
-    () => ({
-      year: filters.year,
-      quarter: filters.quarter,
-      province: filters.provinceHuc,
-      city: filters.cityMunName,
-      barangay: filters.barangayName,
-    }),
-    [filters.year, filters.quarter, filters.provinceHuc, filters.cityMunName, filters.barangayName],
-  )
-  const skfpdStatsFilters = useMemo(
+  const quarterlyStatsFilters = useMemo(
     () => ({
       year: filters.year,
       quarter: filters.quarter,
@@ -369,43 +518,102 @@ export default function Overview({ onNavigate }) {
     }),
     [filters.year, filters.provinceHuc, filters.cityMunName],
   )
+
   const hasSelectedLocation = Boolean(
     locationStatsFilters.province || locationStatsFilters.city || locationStatsFilters.barangay,
   )
-  const isBFDPApplicable = !filters.month
-  const isSKFPDApplicable = !filters.month
-  const isLTRPPApplicable = !filters.month
-  const isRoadSafetyApplicable = !filters.month && !filters.barangayName && Boolean(filters.year && filters.quarter)
-  const isASFMonitoringApplicable = !filters.quarter && !filters.barangayName && Boolean(filters.year && filters.month)
-  const isSGLGApplicable = !filters.month && !filters.quarter && !filters.barangayName
+  const isSGLGSelectedLgu = Boolean(sglgStatsFilters.province || sglgStatsFilters.city)
+
+  // Whether each module's query should run under the current filters.
+  const moduleEnabled = {
+    sglg: !filters.month && !filters.quarter && !filters.barangayName,
+    bfdp: !filters.month,
+    skfpd: !filters.month,
+    ltrpp: !filters.month,
+    'road-safety': !filters.month && !filters.barangayName && Boolean(filters.year && filters.quarter),
+    'asf-monitoring': !filters.quarter && !filters.barangayName && Boolean(filters.year && filters.month),
+  }
+
+  const notApplicableMessages = {
+    sglg: 'SGLG is annual and municipal-level — clear the Barangay, Quarter and Month filters to load it.',
+    bfdp: 'BFDP is quarterly — clear the Month filter to load it.',
+    skfpd: 'SKFPD is quarterly — clear the Month filter to load it.',
+    ltrpp: 'LPTRPP is quarterly — clear the Month filter to load it.',
+    'road-safety': 'Select a year and quarter (without a barangay or month) to load this quarterly report.',
+    'asf-monitoring': 'Select a year and month (without a barangay or quarter) to load this monthly report.',
+  }
 
   const geoOptionsQuery = useGeoOptions()
   const asfMonitoringGeoOptionsQuery = useASFMonitoringGeoOptions()
   const locationStatsQuery = useOverviewLocationStats(locationStatsFilters)
-  const bfdpStatsQuery = useOverviewBFDPStats(bfdpStatsFilters, {
-    enabled: isBFDPApplicable,
+  const bfdpStatsQuery = useOverviewBFDPStats(quarterlyStatsFilters, {
+    enabled: moduleEnabled.bfdp,
     requireLocation: false,
   })
-  const skfpdStatsQuery = useOverviewSKFPDStats(skfpdStatsFilters, {
-    enabled: isSKFPDApplicable,
+  const skfpdStatsQuery = useOverviewSKFPDStats(quarterlyStatsFilters, {
+    enabled: moduleEnabled.skfpd,
     requireLocation: false,
   })
   const ltrppStatsQuery = useOverviewLTRPPStats(ltrppStatsFilters, {
-    enabled: isLTRPPApplicable,
+    enabled: moduleEnabled.ltrpp,
     requireLocation: false,
   })
   const roadSafetyStatsQuery = useOverviewRoadSafetyStats(roadSafetyStatsFilters, {
-    enabled: isRoadSafetyApplicable,
+    enabled: moduleEnabled['road-safety'],
     requireLocation: false,
   })
   const asfMonitoringStatsQuery = useOverviewASFMonitoringStats(asfMonitoringStatsFilters, {
-    enabled: isASFMonitoringApplicable,
+    enabled: moduleEnabled['asf-monitoring'],
     requireLocation: false,
   })
   const sglgStatsQuery = useSGLGDashboard(sglgStatsFilters, {
-    enabled: isSGLGApplicable,
+    enabled: moduleEnabled.sglg,
   })
+
+  const moduleQueries = {
+    sglg: sglgStatsQuery,
+    bfdp: bfdpStatsQuery,
+    skfpd: skfpdStatsQuery,
+    ltrpp: ltrppStatsQuery,
+    'road-safety': roadSafetyStatsQuery,
+    'asf-monitoring': asfMonitoringStatsQuery,
+  }
+
+  const moduleRows = reportModules.map((module) => {
+    const query = moduleQueries[module.id]
+    const isApplicable = isPeriodApplicable(module, filters) && moduleEnabled[module.id]
+    const stats = module.id === 'sglg' ? adaptSGLGStats(query.data, isSGLGSelectedLgu) : query.data
+    const view = buildModuleView(module, {
+      query,
+      stats,
+      isApplicable,
+      notApplicableMessage: notApplicableMessages[module.id],
+    })
+
+    return { module, view, isApplicable, canOpen: isApplicable }
+  })
+
+  const allQueries = [
+    geoOptionsQuery,
+    asfMonitoringGeoOptionsQuery,
+    locationStatsQuery,
+    ...Object.values(moduleQueries),
+  ]
+  const isRefreshing = allQueries.some((query) => query.isFetching)
+  const lastUpdated = Math.max(0, ...Object.values(moduleQueries).map((query) => query.dataUpdatedAt || 0))
+  const lastUpdatedLabel = lastUpdated
+    ? new Date(lastUpdated).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+    : null
+
   const locationCards = locationStatsQuery.data?.cards ?? []
+
+  const handleOpen = (moduleId) => {
+    const module = reportModules.find((item) => item.id === moduleId)
+
+    if (module) {
+      onNavigate(module.id, { filters: module.getPayload(filters) })
+    }
+  }
 
   const handleRefresh = () => {
     queryClient.invalidateQueries({ queryKey: ['geo-options'] })
@@ -430,20 +638,12 @@ export default function Overview({ onNavigate }) {
         optionsLoading={geoOptionsQuery.isLoading}
         optionError={geoOptionsQuery.error?.message}
         onRefresh={handleRefresh}
-        isRefreshing={
-          geoOptionsQuery.isFetching ||
-          locationStatsQuery.isFetching ||
-          asfMonitoringGeoOptionsQuery.isFetching ||
-          bfdpStatsQuery.isFetching ||
-          skfpdStatsQuery.isFetching ||
-          ltrppStatsQuery.isFetching ||
-          roadSafetyStatsQuery.isFetching ||
-          asfMonitoringStatsQuery.isFetching ||
-          sglgStatsQuery.isFetching
-        }
+        isRefreshing={isRefreshing}
         includeMonth
         coverage={overviewCoverage}
       />
+
+      <ActiveFilterChips filters={filters} onChange={setFilters} initialFilters={initialFilters} />
 
       {locationStatsQuery.error ? (
         <Card className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-none ring-0">
@@ -451,160 +651,44 @@ export default function Overview({ onNavigate }) {
         </Card>
       ) : null}
 
-      {!hasSelectedLocation ? <SelectionState /> : null}
-
       {hasSelectedLocation ? (
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <section aria-label="Location profile" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {locationStatsQuery.isLoading
             ? ['Population', 'Income Class', 'LGU Count', 'PSGC Code'].map((title) => (
-                <SummaryCard key={title} title={title} value="Loading..." />
+                <Card key={title} className="rounded-xl border border-line bg-white p-4 shadow-none ring-0">
+                  <Skeleton className="h-3 w-20" />
+                  <Skeleton className="mt-3 h-7 w-28" />
+                </Card>
               ))
             : locationCards.map((card) => (
-                <SummaryCard
-                  key={card.title}
-                  title={card.title}
-                  value={card.value}
-                  info={card.info}
-                />
+                <SummaryCard key={card.title} title={card.title} value={card.value} info={card.info} />
               ))}
         </section>
-      ) : null}
+      ) : (
+        <SelectionHint />
+      )}
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {reportModules.map((report) => {
-          const reportState = getReportState(report, filters)
-          const reportCoverage = dataCoverage[report.id]
+      <RegionalSnapshot rows={moduleRows} updatedAt={lastUpdatedLabel} onSelect={handleOpen} />
 
-          return (
-            <Card key={report.id} className="flex h-full min-h-[362px] flex-col rounded-xl border border-line bg-white p-5 shadow-none ring-0 transition hover:border-line-strong">
-              <div className={reportHeaderClassName}>
-                <div>
-                  <h3 className="text-[15px] font-semibold tracking-tightish text-ink">{report.title}</h3>
-                  <p className="mt-1 text-[13px] leading-relaxed text-ink-muted">{report.description}</p>
-                </div>
-                <Badge color={reportState.color}>{reportState.label}</Badge>
-              </div>
-              {reportCoverage ? (
-                <div className="mt-3 rounded-md border border-audit-500/30 bg-audit-50 px-2.5 py-1.5">
-                  <div className="text-[9px] font-semibold uppercase leading-3 tracking-[0.14em] text-audit-500">
-                    Period Covered
-                  </div>
-                  <div className="mt-0.5 text-[12px] font-semibold leading-4 tracking-tightish text-audit-700">
-                    {reportCoverage.period}
-                  </div>
-                </div>
-              ) : null}
-              {report.id === 'bfdp' || report.id === 'skfpd' || report.id === 'ltrpp' || report.id === 'road-safety' || report.id === 'asf-monitoring' ? (
-                <QuarterlyComplianceCardStats
-                  stats={
-                    report.id === 'bfdp'
-                      ? bfdpStatsQuery.data
-                      : report.id === 'skfpd'
-                        ? skfpdStatsQuery.data
-                        : report.id === 'ltrpp'
-                          ? ltrppStatsQuery.data
-                          : report.id === 'road-safety'
-                            ? roadSafetyStatsQuery.data
-                            : asfMonitoringStatsQuery.data
-                  }
-                  isLoading={
-                    report.id === 'bfdp'
-                      ? bfdpStatsQuery.isLoading
-                      : report.id === 'skfpd'
-                        ? skfpdStatsQuery.isLoading
-                        : report.id === 'ltrpp'
-                          ? ltrppStatsQuery.isLoading
-                          : report.id === 'road-safety'
-                            ? roadSafetyStatsQuery.isLoading
-                            : asfMonitoringStatsQuery.isLoading
-                  }
-                  isApplicable={
-                    report.id === 'ltrpp'
-                      ? reportState.isApplicable && isLTRPPApplicable
-                      : report.id === 'road-safety'
-                        ? reportState.isApplicable && isRoadSafetyApplicable
-                        : report.id === 'asf-monitoring'
-                          ? reportState.isApplicable && isASFMonitoringApplicable
-                      : reportState.isApplicable
-                  }
-                  notApplicableMessage={
-                    report.id === 'road-safety'
-                      ? 'Select a year and quarter to load this quarterly report.'
-                      : report.id === 'asf-monitoring'
-                        ? 'Select a year and month to load this monthly report.'
-                      : 'Not applicable for Month filter.'
-                  }
-                />
-              ) : null}
-              {report.id === 'sglg' ? (
-                <SGLGCardStats
-                  stats={sglgStatsQuery.data}
-                  isLoading={sglgStatsQuery.isLoading}
-                  isApplicable={reportState.isApplicable && isSGLGApplicable}
-                  isSelectedLgu={Boolean(sglgStatsFilters.province || sglgStatsFilters.city)}
-                />
-              ) : null}
-              <div className="mt-auto flex min-h-[82px] items-end justify-between gap-3 border-t border-line pt-4">
-                <div>
-                  <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
-                    Frequency
-                  </div>
-                  <div className="mt-1 text-[13px] font-semibold text-ink">{report.frequency}</div>
-                </div>
-                {report.id === 'bfdp' || report.id === 'skfpd' ? (
-                  <button
-                    type="button"
-                    onClick={() => onNavigate(report.id, { filters: getQuarterlyFilterPayload(filters) })}
-                    disabled={!reportState.isApplicable}
-                    className="inline-flex items-center gap-1 rounded-md bg-civic-700 px-3.5 py-1.5 text-[13px] font-medium text-white transition hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-ink-subtle"
-                  >
-                    Open <span aria-hidden>→</span>
-                  </button>
-                ) : null}
-                {report.id === 'ltrpp' ? (
-                  <button
-                    type="button"
-                    onClick={() => onNavigate('ltrpp', { filters: getLTRPPFilterPayload(filters) })}
-                    disabled={!reportState.isApplicable || !isLTRPPApplicable}
-                    className="inline-flex items-center gap-1 rounded-md bg-civic-700 px-3.5 py-1.5 text-[13px] font-medium text-white transition hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-ink-subtle"
-                  >
-                    Open <span aria-hidden>→</span>
-                  </button>
-                ) : null}
-                {report.id === 'road-safety' ? (
-                  <button
-                    type="button"
-                    onClick={() => onNavigate('road-safety', { filters: getRoadSafetyFilterPayload(filters) })}
-                    disabled={!reportState.isApplicable || !isRoadSafetyApplicable}
-                    className="inline-flex items-center gap-1 rounded-md bg-civic-700 px-3.5 py-1.5 text-[13px] font-medium text-white transition hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-ink-subtle"
-                  >
-                    Open <span aria-hidden>→</span>
-                  </button>
-                ) : null}
-                {report.id === 'asf-monitoring' ? (
-                  <button
-                    type="button"
-                    onClick={() => onNavigate('asf-monitoring', { filters: getASFMonitoringFilterPayload(filters) })}
-                    disabled={!reportState.isApplicable || !isASFMonitoringApplicable}
-                    className="inline-flex items-center gap-1 rounded-md bg-civic-700 px-3.5 py-1.5 text-[13px] font-medium text-white transition hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-ink-subtle"
-                  >
-                    Open <span aria-hidden>→</span>
-                  </button>
-                ) : null}
-                {report.id === 'sglg' ? (
-                  <button
-                    type="button"
-                    onClick={() => onNavigate('sglg', { filters: getAnnualFilterPayload(filters) })}
-                    disabled={!reportState.isApplicable || !isSGLGApplicable}
-                    className="inline-flex items-center gap-1 rounded-md bg-civic-700 px-3.5 py-1.5 text-[13px] font-medium text-white transition hover:bg-civic-600 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-ink-subtle"
-                  >
-                    Open <span aria-hidden>→</span>
-                  </button>
-                ) : null}
-              </div>
-            </Card>
-          )
-        })}
+      <section aria-label="Report modules">
+        <div className="mb-3 flex items-baseline justify-between">
+          <h2 className="text-[15px] font-semibold tracking-tightish text-ink">Reports</h2>
+          <span className="text-[12px] text-ink-muted">
+            {moduleRows.filter((row) => row.isApplicable).length} of {moduleRows.length} apply to these filters
+          </span>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {moduleRows.map(({ module, view, isApplicable, canOpen }) => (
+            <ReportCard
+              key={module.id}
+              module={module}
+              view={view}
+              isApplicable={isApplicable}
+              canOpen={canOpen}
+              onOpen={() => handleOpen(module.id)}
+            />
+          ))}
+        </div>
       </section>
     </div>
   )

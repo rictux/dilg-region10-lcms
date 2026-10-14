@@ -8,6 +8,8 @@ const titles = {
   skfpd: 'SK Full Public Disclosure',
   ltrpp: 'Local Public Transport Route Plan Preparation',
   sglg: 'Seal of Good Local Governance',
+  'road-safety': 'Road Classification & Safety',
+  'asf-monitoring': 'ASF Monitoring',
 }
 
 export default function DashboardLayout({ activePage, onNavigate, children }) {
@@ -24,6 +26,7 @@ export default function DashboardLayout({ activePage, onNavigate, children }) {
       <div className="min-w-0 flex-1">
         <Header
           title={titles[activePage] ?? 'Overview'}
+          eyebrow="DILG Region 10 · LGU Compliance Monitoring"
           onMenuClick={() => setSidebarOpen(true)}
         />
         <main className="mx-auto w-full max-w-[1400px] px-4 py-6 md:px-8 md:py-8">{children}</main>
