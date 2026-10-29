@@ -1,29 +1,23 @@
-export default function Header({ title, eyebrow, onMenuClick }) {
+export default function Header({ title, description, onMenuClick }) {
   return (
-    <header className="sticky top-0 z-20 border-b border-line bg-white/85 px-4 py-4 backdrop-blur md:px-8">
-      <div className="flex items-center justify-between gap-4">
-        <div className="min-w-0">
-          {eyebrow ? (
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-civic-700">
-              {eyebrow}
-            </p>
-          ) : null}
-          <h1
-            className={`truncate font-semibold tracking-tighter2 text-ink ${
-              eyebrow ? 'mt-1 text-xl md:text-[26px]' : 'text-xl md:text-[26px]'
-            }`}
-          >
-            {title}
-          </h1>
-        </div>
+    <header className="border-b border-line bg-white">
+      <div className="mx-auto flex w-full max-w-[1400px] items-start gap-3 px-4 py-5 md:px-8 md:py-6">
         <button
           type="button"
           onClick={onMenuClick}
-          className="rounded-lg border border-line px-3 py-2 text-sm font-medium text-ink-soft transition hover:bg-zinc-50 hover:text-ink lg:hidden"
+          className="-ml-1 mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-line text-ink-soft transition hover:bg-surface-muted hover:text-ink lg:hidden"
           aria-label="Open navigation"
         >
-          Menu
+          <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+            <path d="M3 6h14M3 10h14M3 14h14" strokeLinecap="round" />
+          </svg>
         </button>
+        <div className="min-w-0">
+          <h1 className="text-[22px] font-bold leading-tight text-ink md:text-[28px]">{title}</h1>
+          {description ? (
+            <p className="mt-1.5 max-w-[68ch] text-[14px] leading-relaxed text-ink-muted">{description}</p>
+          ) : null}
+        </div>
       </div>
     </header>
   )

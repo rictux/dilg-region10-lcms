@@ -14,9 +14,8 @@ React + Vite dashboard for Region 10 government report analytics. The app uses S
 
 - Overview page with Province/HUC, City/Municipality, Barangay, Year, Quarter, and Month filters.
 - Overview active-filter chips: each applied filter is shown as a removable chip (removing a location also clears the locations nested under it), plus a Clear all action.
-- Overview Compliance snapshot: one bar per report showing the share of reported LGUs in the top status (fully compliant / passed / complete) for the current filters, with the strongest and weakest report called out and the last refresh time. Rows are clickable and open the report.
-- Overview report cards (SGLG, BFDP, SKFPD, LPTRPP, Road Class & Safety, ASF Monitoring; three per row on wide screens) showing a headline rate, a stacked status bar with counts and percentages, skeleton loading states, per-card error messages, and guidance on which filter to change when a report does not apply.
-- Shared location filters with searchable City/Municipality and Barangay dropdowns.
+- Overview report board: one row per report (SGLG, BFDP, SKFPD, LPTRPP, Road Class & Safety, ASF Monitoring) showing the share of reporting LGUs in the top status (fully compliant / passed / complete), a stacked status bar with counts, the reporting period and frequency, and the highest and lowest report marked. Rows open the report's dashboard with the current filters; rows that do not apply say which filter to change. Includes skeleton loading, per-row errors and the last refresh time.
+- Shared location filters with searchable City/Municipality and Barangay dropdowns, an active-filter count, and a collapsible panel on phones.
 - Province/HUC, City/Municipality, Barangay, Year, and Quarter filtering for quarterly report dashboards.
 - SGLG dashboard with annual filters, overall rating summaries, rating by Province/HUC, governance area charts, sub-indicator charts, and detailed records.
 - BFDP, SKFPD, and LPTRPP dashboards with summary cards, average score by Province/HUC, quarterly trends, status by location, document completion charts, and detailed tables.
@@ -25,7 +24,8 @@ React + Vite dashboard for Region 10 government report analytics. The app uses S
 - Province/HUC status/rating charts that keep regional context while highlighting the selected Province/HUC.
 - Score-by-Province/HUC charts sorted by average score.
 - ApexCharts bar, column, line, donut, and completion charts.
-- Responsive dashboard layout with sidebar navigation.
+- Responsive dashboard layout: sidebar navigation grouped by reporting frequency (annual, quarterly, monthly) with each report's full name, a slide-in drawer on small screens (Esc or the close button dismisses it), and a page header that describes each report.
+- Visual system: Public Sans (self-hosted via `@fontsource-variable/public-sans`), cool slate neutrals, civic green for compliance, seal gold for the current place and reporting periods, and one shared status palette (green / amber / red) across cards, charts and tables. Tables mark met requirements with a quiet check and highlight gaps, so missing documents stand out.
 
 ## Database Fields Used
 
@@ -81,11 +81,13 @@ src/
     cards/
       SummaryCard.jsx
     common/
+      ComplianceMark.jsx
+      DashboardSkeleton.jsx
       DataCoverageNotice.jsx
       Skeleton.jsx
     overview/
       ActiveFilterChips.jsx
-      RegionalSnapshot.jsx
+      ReportBoard.jsx
       StatusBreakdown.jsx
     charts/
       ChartEmptyState.jsx
@@ -99,6 +101,7 @@ src/
     layout/
       DashboardLayout.jsx
       Header.jsx
+      navigation.js
       Sidebar.jsx
     tables/
       BFDPTable.jsx

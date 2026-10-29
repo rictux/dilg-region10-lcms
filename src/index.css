@@ -3,28 +3,28 @@
 @tailwind utilities;
 
 :root {
-  --bg: #fafafa;
+  --bg: #f4f5f2;
   --bg-elevated: #ffffff;
-  --border: #e7e7e9;
-  --border-strong: #d4d4d6;
-  --ink: #18181b;
-  --ink-soft: #3f3f46;
-  --muted: #71717a;
-  --muted-soft: #a1a1aa;
-  --accent: #2f7d64;
+  --border: #e1e5de;
+  --border-strong: #cbd1c8;
+  --ink: #1b2430;
+  --ink-soft: #3b4552;
+  --muted: #5b6573;
+  --muted-soft: #8a94a3;
+  --accent: #276b56;
   --accent-strong: #225747;
 
   color: var(--ink);
   background: var(--bg);
   font-family:
-    "Inter",
+    "Public Sans Variable",
+    "Public Sans",
     system-ui,
     -apple-system,
     "Segoe UI",
     Roboto,
     "Helvetica Neue",
     sans-serif;
-  font-feature-settings: "cv11", "ss01", "ss03";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -39,7 +39,20 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background: var(--bg);
-  letter-spacing: -0.005em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 button,
@@ -60,7 +73,6 @@ h4 {
 .tabular-nums,
 .font-num {
   font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum", "cv11";
 }
 
 ::-webkit-scrollbar {
@@ -73,33 +85,33 @@ h4 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #e4e4e7;
+  background: #e1e5de;
   border-radius: 999px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #d4d4d8;
+  background: #cbd1c8;
   background-clip: padding-box;
   border: 2px solid transparent;
 }
 
 .apexcharts-tooltip {
-  border: 1px solid #e4e4e7 !important;
+  border: 1px solid #e1e5de !important;
   border-radius: 10px !important;
-  box-shadow: 0 12px 32px -12px rgba(24, 24, 27, 0.18) !important;
+  box-shadow: 0 12px 32px -12px rgba(27, 36, 48, 0.22) !important;
   font-family: inherit !important;
 }
 
 .apexcharts-legend-text {
-  color: #52525b !important;
+  color: #3b4552 !important;
   font-family: inherit !important;
 }
 
 .apexcharts-xaxis text,
 .apexcharts-yaxis text {
-  fill: #71717a;
+  fill: #5b6573;
   font-family: inherit !important;
 }
 

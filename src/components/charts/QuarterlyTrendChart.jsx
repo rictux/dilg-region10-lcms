@@ -4,7 +4,7 @@ import ChartEmptyState from './ChartEmptyState'
 
 function ChartTitle({ selectedLguPath }) {
   return (
-    <h3 className="text-sm font-semibold tracking-tightish text-ink">
+    <h3 className="text-[15px] font-semibold text-ink">
       Quarterly Trend
       {selectedLguPath ? (
         <span className="font-normal text-ink-muted"> ({selectedLguPath})</span>
@@ -34,7 +34,7 @@ export default function QuarterlyTrendChart({ data, selectedYear, selectedLguPat
     colors: ['#2f7d64'],
     grid: {
       show: true,
-      borderColor: '#f1f1f3',
+      borderColor: '#eef0ec',
       strokeDashArray: 4,
       xaxis: { lines: { show: false } },
     },
@@ -52,14 +52,14 @@ export default function QuarterlyTrendChart({ data, selectedYear, selectedLguPat
     dataLabels: {
       enabled: true,
       formatter: (value) => (value === null ? '' : value.toFixed(1)),
-      style: { colors: ['#18181b'], fontSize: '11px', fontWeight: 600 },
+      style: { colors: ['#1b2430'], fontSize: '11px', fontWeight: 600 },
       background: { enabled: false },
     },
     xaxis: {
       categories: data.map((item) => `Q${item.quarter}`),
-      labels: { style: { colors: '#71717a', fontSize: '11px' } },
-      axisBorder: { color: '#e4e4e7' },
-      axisTicks: { color: '#e4e4e7' },
+      labels: { style: { colors: '#5b6573', fontSize: '11px' } },
+      axisBorder: { color: '#e1e5de' },
+      axisTicks: { color: '#e1e5de' },
     },
     yaxis: {
       min: 0,

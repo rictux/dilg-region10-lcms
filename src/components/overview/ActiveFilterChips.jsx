@@ -43,7 +43,7 @@ export default function ActiveFilterChips({ filters, onChange, initialFilters })
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-muted">Viewing</span>
+      <span className="text-[11px] font-semibold text-ink-muted">Viewing</span>
       {chips.map((chip) => (
         <span
           key={chip.key}

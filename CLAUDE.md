@@ -91,7 +91,11 @@ SGLG is annual; all others are quarterly or monthly. Each has a `score` or `over
 
 **Filters:** `LocationFilters.jsx` provides shared Province/City/Barangay, Year, Quarter, and Month selects (last two optional per dashboard).
 
-**Sidebar/Header:** Static navigation in `DashboardLayout.jsx`; sidebar lists report modules as links. Mobile menu toggle.
+**Sidebar/Header:** Page names and descriptions live in `components/layout/navigation.js` (shared by `Sidebar.jsx` and `Header.jsx`); the sidebar groups reports by frequency. Mobile drawer with Esc/close button.
+
+**Overview:** `ReportBoard.jsx` renders one row per report from the `moduleRows` built in `pages/Overview.jsx`.
+
+**Status colours:** good/warn/bad tones come from `toneStyles` in `components/overview/StatusBreakdown.jsx`; chart hex values use civic `#2f7d64`, amber `#d49a1a`, red `#c2412d`, and navy `#1f4e79` for single-measure charts. Use `ComplianceMark` for met/not-met table cells.
 
 ### Query Caching & Prefetching
 
@@ -137,7 +141,7 @@ Do not commit `.env`; `.env.example` shows the required keys. Use Supabase RLS p
 ## Notes for Future Development
 
 - **No TypeScript:** Plain JavaScript throughout; consider typing if adding complex utilities
-- **Styling:** Uses Tailwind utility classes + Tremor components; custom colors are `civic.*` (green) and `audit.*` (orange)
+- **Styling:** Uses Tailwind utility classes + Tremor components; custom colors are `civic.*` (green), `seal.*` (gold, for current place and periods), `audit.*` (orange), and slate `ink`/`line`/`surface` neutrals; font is Public Sans
 - **Naming conventions:** camelCase for variables/functions, PascalCase for components, snake_case in database queries
 - **Pagination:** Services fetch up to 1000 rows; dashboards typically paginate at 25 rows per page for tables
 - **Geo options:** Always fetched first; used for filter dropdowns in all dashboards
