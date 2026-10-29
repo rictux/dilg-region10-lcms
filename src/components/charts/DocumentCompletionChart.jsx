@@ -34,17 +34,17 @@ export default function DocumentCompletionChart({
       enabled: true,
       formatter: (value) => `${value}%`,
       offsetY: -18,
-      style: { colors: ['#18181b'], fontSize: '11px', fontWeight: 600 },
+      style: { colors: ['#1b2430'], fontSize: '11px', fontWeight: 600 },
     },
     xaxis: {
       categories: documents.map((item) => item.label),
       labels: {
         rotate: -35,
         trim: true,
-        style: { colors: '#71717a', fontSize: '11px' },
+        style: { colors: '#5b6573', fontSize: '11px' },
       },
-      axisBorder: { color: '#e4e4e7' },
-      axisTicks: { color: '#e4e4e7' },
+      axisBorder: { color: '#e1e5de' },
+      axisTicks: { color: '#e1e5de' },
     },
     yaxis: {
       min: 0,
@@ -62,15 +62,15 @@ export default function DocumentCompletionChart({
         }
 
         return `
-          <div style="padding: 10px 12px; font-size: 12px; color: #18181b;">
+          <div style="padding: 10px 12px; font-size: 12px; color: #1b2430;">
             <div style="font-weight: 600;">${document.fullLabel ?? document.label}</div>
-            <div style="margin-top: 4px; color: #71717a;">${document.percentage}% completion</div>
+            <div style="margin-top: 4px; color: #5b6573;">${document.percentage}% completion</div>
             <div style="margin-top: 8px; display: grid; gap: 4px;">
-              <div style="display: flex; justify-content: space-between; gap: 18px; color: #047857; font-weight: 600;">
+              <div style="display: flex; justify-content: space-between; gap: 18px; color: #276b56; font-weight: 600;">
                 <span>${positiveLabel}</span>
                 <span>${document.complete}</span>
               </div>
-              <div style="display: flex; justify-content: space-between; gap: 18px; color: #b91c1c; font-weight: 600;">
+              <div style="display: flex; justify-content: space-between; gap: 18px; color: #b42318; font-weight: 600;">
                 <span>${negativeLabel}</span>
                 <span>${document.missing}</span>
               </div>
@@ -83,7 +83,7 @@ export default function DocumentCompletionChart({
 
   return (
     <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
-      <h3 className="text-sm font-semibold tracking-tightish text-ink">{title}</h3>
+      <h3 className="text-[15px] font-semibold text-ink">{title}</h3>
       <Chart
         options={options}
         series={[{ name: 'Completion', data: documents.map((item) => item.percentage) }]}

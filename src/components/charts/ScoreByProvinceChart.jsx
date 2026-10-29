@@ -23,8 +23,8 @@ export default function ScoreByProvinceChart({
     return `rgba(${red}, ${green}, ${blue}, 0.2)`
   }
 
-  const baseColor = '#d97706'
-  const highlightColor = '#0f766e'
+  const baseColor = '#1f4e79'
+  const highlightColor = '#b8892b'
   const hasHighlight = Boolean(highlightedLocation)
   const labels = data.map((item) => item.label ?? item.city ?? item.province)
   const maxValue = Math.max(1, ...data.map((item) => item.averageScore ?? 0))
@@ -61,17 +61,17 @@ export default function ScoreByProvinceChart({
       enabled: true,
       formatter: (value) => (value === null ? '' : value.toFixed(1)),
       offsetY: -18,
-      style: { colors: ['#18181b'], fontSize: '11px', fontWeight: 600 },
+      style: { colors: ['#1b2430'], fontSize: '11px', fontWeight: 600 },
     },
     xaxis: {
       categories: labels,
       labels: {
         rotate: -35,
         trim: true,
-        style: { colors: '#71717a', fontSize: '11px' },
+        style: { colors: '#5b6573', fontSize: '11px' },
       },
-      axisBorder: { color: '#e4e4e7' },
-      axisTicks: { color: '#e4e4e7' },
+      axisBorder: { color: '#e1e5de' },
+      axisTicks: { color: '#e1e5de' },
     },
     yaxis: {
       min: 0,
@@ -90,7 +90,7 @@ export default function ScoreByProvinceChart({
 
   return (
     <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
-      <h3 className="text-sm font-semibold tracking-tightish text-ink">{title}</h3>
+      <h3 className="text-[15px] font-semibold text-ink">{title}</h3>
       <Chart
         options={options}
         series={[{ name: 'Average Score', data: seriesData }]}

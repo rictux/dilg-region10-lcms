@@ -24,6 +24,7 @@ import {
   useRoadSafetyTable,
 } from '../hooks/useRoadSafetyQueries'
 import { applyCoverage, dataCoverage, getCoverageDefaults } from '../config/dataCoverage'
+import DashboardSkeleton from '../components/common/DashboardSkeleton'
 
 const moduleTitle = 'Classification of Roads, Setting of Speed Limits and Collection of Road Crash Data'
 
@@ -37,19 +38,14 @@ const defaultFilters = {
 }
 
 function LoadingState() {
-  return (
-    <Card className="rounded-xl border border-line bg-white p-10 text-center shadow-none ring-0">
-      <div className="text-[13px] font-semibold uppercase tracking-[0.14em] text-civic-700">Loading {moduleTitle} dashboard…</div>
-      <p className="mt-2 text-[13px] text-ink-muted">Fetching road safety compliance records.</p>
-    </Card>
-  )
+  return <DashboardSkeleton label="Loading road safety dashboard" />
 }
 
 function ErrorState({ message }) {
   return (
-    <Card className="rounded-xl border border-red-200 bg-red-50 p-10 text-center shadow-none ring-0">
-      <div className="text-[15px] font-semibold tracking-tightish text-red-900">Unable to load {moduleTitle} data</div>
-      <p className="mt-2 text-[13px] text-red-700">{message}</p>
+    <Card className="rounded-xl border border-rose-200 bg-rose-50 p-10 text-center shadow-none ring-0">
+      <div className="text-[15px] font-semibold tracking-tightish text-rose-900">Unable to load {moduleTitle} data</div>
+      <p className="mt-2 text-[13px] text-rose-800">{message}</p>
     </Card>
   )
 }
@@ -95,7 +91,7 @@ function ProvinceMetricColumnChart({
   fieldLabel,
   selectedProvince = '',
   onFilterSelect,
-  color = '#0f766e',
+  color = '#1f4e79',
 }) {
   if (!data.length) {
     return <ChartEmptyState title={title} />
@@ -147,14 +143,14 @@ function ProvinceMetricColumnChart({
       enabled: true,
       formatter: (value) => (value > 0 ? value.toLocaleString() : ''),
       offsetY: -18,
-      style: { colors: ['#0f172a'], fontSize: '11px', fontWeight: 700 },
+      style: { colors: ['#1b2430'], fontSize: '11px', fontWeight: 700 },
     },
     xaxis: {
       categories: labels,
       labels: {
         rotate: -35,
         trim: true,
-        style: { colors: '#475569', fontSize: '12px' },
+        style: { colors: '#5b6573', fontSize: '12px' },
       },
     },
     yaxis: {
@@ -171,7 +167,7 @@ function ProvinceMetricColumnChart({
 
   return (
     <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
-      <h3 className="text-sm font-semibold tracking-tightish text-ink">{title}</h3>
+      <h3 className="text-[15px] font-semibold text-ink">{title}</h3>
       <Chart options={options} series={[{ name: fieldLabel, data: seriesData }]} type="bar" height={340} />
     </Card>
   )
@@ -183,9 +179,9 @@ function SpeedSignsChart({ data, selectedProvince = '', selectedFieldKey = '', o
   }
 
   const signFields = [
-    { key: 'signs_cm_brgy_road', label: 'City/Municipality/Barangay Road', color: '#0f766e' },
-    { key: 'signs_provincial_road', label: 'Provincial Road', color: '#b45309' },
-    { key: 'signs_national_road', label: 'National Road', color: '#2563eb' },
+    { key: 'signs_cm_brgy_road', label: 'City/Municipality/Barangay Road', color: '#1f4e79' },
+    { key: 'signs_provincial_road', label: 'Provincial Road', color: '#b07d1a' },
+    { key: 'signs_national_road', label: 'National Road', color: '#2a7f86' },
   ]
   const labels = data.map((item) => item.label ?? item.province)
   const hasHighlight = Boolean(selectedProvince)
@@ -242,14 +238,14 @@ function SpeedSignsChart({ data, selectedProvince = '', selectedFieldKey = '', o
       enabled: true,
       formatter: (value) => (value > 0 ? value.toLocaleString() : ''),
       offsetY: -16,
-      style: { colors: ['#0f172a'], fontSize: '10px', fontWeight: 700 },
+      style: { colors: ['#1b2430'], fontSize: '10px', fontWeight: 700 },
     },
     xaxis: {
       categories: labels,
       labels: {
         rotate: -35,
         trim: true,
-        style: { colors: '#475569', fontSize: '12px' },
+        style: { colors: '#5b6573', fontSize: '12px' },
       },
     },
     yaxis: {
@@ -266,7 +262,7 @@ function SpeedSignsChart({ data, selectedProvince = '', selectedFieldKey = '', o
 
   return (
     <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
-      <h3 className="text-sm font-semibold tracking-tightish text-ink">LGUs with Speed Limit Signs</h3>
+      <h3 className="text-[15px] font-semibold text-ink">LGUs with Speed Limit Signs</h3>
       <Chart options={options} series={series} type="bar" height={380} />
     </Card>
   )
@@ -280,7 +276,7 @@ function RoadCrashDataTableChart({ data, selectedProvince = '', onFilterSelect }
   return (
     <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
       <div className="mb-3">
-        <h3 className="text-sm font-semibold tracking-tightish text-ink">Road Crash Data Collected</h3>
+        <h3 className="text-[15px] font-semibold text-ink">Road Crash Data Collected</h3>
       </div>
       <div className="overflow-x-auto">
         <Table className="min-w-[520px]">
@@ -463,7 +459,7 @@ export default function RoadSafetyDashboard({ initialFilters }) {
 
       {hasRequiredPeriod && !isInitialDashboardLoading && !dashboardError && hasDashboardRecords ? (
         <>
-          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <section aria-label="Summary" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
             {(locationStats?.cards ?? []).map((card) => (
               <SummaryCard
                 key={card.title}
@@ -483,7 +479,7 @@ export default function RoadSafetyDashboard({ initialFilters }) {
               fieldLabel="Speed Limit Ordinance"
               selectedProvince={highlightedProvince}
               onFilterSelect={handleChartFilterChange}
-              color="#0f766e"
+              color="#1f4e79"
             />
             <ProvinceMetricColumnChart
               data={provinceFieldCounts}
@@ -492,7 +488,7 @@ export default function RoadSafetyDashboard({ initialFilters }) {
               fieldLabel="Submitted Ordinance to DOTr"
               selectedProvince={highlightedProvince}
               onFilterSelect={handleChartFilterChange}
-              color="#2563eb"
+              color="#1f4e79"
             />
             <ProvinceMetricColumnChart
               data={provinceFieldCounts}
@@ -501,7 +497,7 @@ export default function RoadSafetyDashboard({ initialFilters }) {
               fieldLabel="Crowded Streets"
               selectedProvince={highlightedProvince}
               onFilterSelect={handleChartFilterChange}
-              color="#b45309"
+              color="#1f4e79"
             />
             <ProvinceMetricColumnChart
               data={provinceFieldCounts}
@@ -510,7 +506,7 @@ export default function RoadSafetyDashboard({ initialFilters }) {
               fieldLabel="Road Inventory"
               selectedProvince={highlightedProvince}
               onFilterSelect={handleChartFilterChange}
-              color="#4f46e5"
+              color="#1f4e79"
             />
             <SpeedSignsChart
               data={provinceFieldCounts}

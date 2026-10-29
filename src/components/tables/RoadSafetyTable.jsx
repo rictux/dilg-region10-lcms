@@ -73,11 +73,11 @@ function SortableHeader({ column, sortConfig, onSort }) {
   const indicator = isActive ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '·'
 
   return (
-    <TableHeaderCell className={`${column.headerClassName} border-b border-line bg-zinc-50/60 text-[11px] font-semibold uppercase tracking-wider text-ink-muted`}>
+    <TableHeaderCell className={`${column.headerClassName} border-b border-line bg-surface-muted/60 text-[12px] font-semibold text-ink-soft`}>
       <button
         type="button"
         onClick={() => onSort(column.key)}
-        className="flex w-full items-center justify-center gap-1 text-left text-[11px] font-semibold uppercase tracking-wider text-ink-muted transition hover:text-civic-700"
+        className="flex w-full items-center justify-center gap-1 text-left text-[12px] font-semibold text-ink-soft transition hover:text-civic-700"
       >
         <span>{column.label}</span>
         <span className={`text-[10px] ${isActive ? 'text-civic-700' : 'text-ink-subtle'}`}>{indicator}</span>
@@ -140,7 +140,7 @@ export default function RoadSafetyTable({
     <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
       <div className="mb-4 flex flex-col justify-between gap-2 md:flex-row md:items-center">
         <div>
-          <h2 className="text-sm font-semibold tracking-tightish text-ink">Ordinance Detailed Records</h2>
+          <h2 className="text-[15px] font-semibold text-ink">Ordinance Detailed Records</h2>
           <p className="mt-0.5 text-[13px] text-ink-muted">
             {activeStatusFilter
               ? `Filtered by ${activeStatusFilter}`
@@ -152,12 +152,12 @@ export default function RoadSafetyTable({
             <button
               type="button"
               onClick={onClearStatusFilter}
-              className="rounded-md border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:bg-zinc-50 hover:text-ink"
+              className="rounded-md border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:bg-surface-muted hover:text-ink"
             >
               Clear filter
             </button>
           ) : null}
-          <span className="rounded-md border border-line bg-zinc-50 px-2 py-1 text-[11px] font-medium text-ink-muted">
+          <span className="rounded-md border border-line bg-surface-muted px-2 py-1 text-[11px] font-medium text-ink-muted">
             <span className="font-num font-semibold text-ink">{records.length}</span> of <span className="font-num font-semibold text-ink">{totalRecords}</span>
           </span>
           <label className="flex items-center gap-2 text-[13px] text-ink-muted">
@@ -217,7 +217,7 @@ export default function RoadSafetyTable({
             type="button"
             onClick={() => onPageChange?.(Math.max(0, page - 1))}
             disabled={page === 0}
-            className="rounded-md border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:bg-zinc-50 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-md border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:bg-surface-muted hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
           >
             Previous
           </button>
@@ -225,7 +225,7 @@ export default function RoadSafetyTable({
             type="button"
             onClick={() => onPageChange?.(Math.min(totalPages - 1, page + 1))}
             disabled={page >= totalPages - 1}
-            className="rounded-md border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:bg-zinc-50 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-md border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:bg-surface-muted hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
           >
             Next
           </button>

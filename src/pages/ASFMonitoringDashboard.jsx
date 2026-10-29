@@ -17,6 +17,7 @@ import {
 } from '../hooks/useASFMonitoringQueries'
 import { ASF_MONITORING_FIELDS } from '../utils/asfMonitoringAnalytics'
 import { applyCoverage, dataCoverage, getCoverageDefaults } from '../config/dataCoverage'
+import DashboardSkeleton from '../components/common/DashboardSkeleton'
 
 const moduleTitle = 'ASF Monitoring'
 
@@ -30,22 +31,18 @@ const defaultFilters = {
   month: coverageDefaults.month,
 }
 
-const fieldColors = ['#0f766e', '#2563eb', '#b45309', '#4f46e5', '#be123c', '#64748b', '#15803d']
+// One colour for every single-measure chart: the charts differ by title, not by hue.
+const fieldColors = ['#1f4e79']
 
 function LoadingState() {
-  return (
-    <Card className="rounded-xl border border-line bg-white p-10 text-center shadow-none ring-0">
-      <div className="text-[13px] font-semibold uppercase tracking-[0.14em] text-civic-700">Loading {moduleTitle} dashboard…</div>
-      <p className="mt-2 text-[13px] text-ink-muted">Fetching monthly ASF monitoring records.</p>
-    </Card>
-  )
+  return <DashboardSkeleton label="Loading ASF Monitoring dashboard" />
 }
 
 function ErrorState({ message }) {
   return (
-    <Card className="rounded-xl border border-red-200 bg-red-50 p-10 text-center shadow-none ring-0">
-      <div className="text-[15px] font-semibold tracking-tightish text-red-900">Unable to load {moduleTitle} data</div>
-      <p className="mt-2 text-[13px] text-red-700">{message}</p>
+    <Card className="rounded-xl border border-rose-200 bg-rose-50 p-10 text-center shadow-none ring-0">
+      <div className="text-[15px] font-semibold tracking-tightish text-rose-900">Unable to load {moduleTitle} data</div>
+      <p className="mt-2 text-[13px] text-rose-800">{message}</p>
     </Card>
   )
 }
@@ -147,14 +144,14 @@ function IndicatorColumnChart({
       enabled: true,
       formatter: (value) => (value > 0 ? value.toLocaleString() : ''),
       offsetY: -18,
-      style: { colors: ['#0f172a'], fontSize: '11px', fontWeight: 700 },
+      style: { colors: ['#1b2430'], fontSize: '11px', fontWeight: 700 },
     },
     xaxis: {
       categories: labels,
       labels: {
         rotate: -35,
         trim: true,
-        style: { colors: '#475569', fontSize: '12px' },
+        style: { colors: '#5b6573', fontSize: '12px' },
       },
     },
     yaxis: {
@@ -171,7 +168,7 @@ function IndicatorColumnChart({
 
   return (
     <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
-      <h3 className="text-sm font-semibold tracking-tightish text-ink">{title}</h3>
+      <h3 className="text-[15px] font-semibold text-ink">{title}</h3>
       <Chart options={options} series={[{ name: field.label, data: seriesData }]} type="bar" height={320} />
     </Card>
   )
@@ -328,7 +325,7 @@ export default function ASFMonitoringDashboard({ initialFilters }) {
 
       {hasRequiredPeriod && !isInitialDashboardLoading && !dashboardError && hasDashboardRecords ? (
         <>
-          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <section aria-label="Summary" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
             {(locationStats?.cards ?? []).map((card) => (
               <SummaryCard
                 key={card.title}

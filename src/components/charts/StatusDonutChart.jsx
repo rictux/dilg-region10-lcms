@@ -2,7 +2,7 @@ import Chart from 'react-apexcharts'
 import { Card } from '@tremor/react'
 import ChartEmptyState from './ChartEmptyState'
 
-const fallbackPalette = ['#475569', '#7c3aed', '#dc2626']
+const fallbackPalette = ['#5b6573', '#7a4e8c', '#c2412d']
 
 const getStatusColor = (status = '', index = 0) => {
   const normalizedStatus = status.toLowerCase()
@@ -12,23 +12,23 @@ const getStatusColor = (status = '', index = 0) => {
     normalizedStatus.includes('non-compliance') ||
     normalizedStatus.includes('notice of non')
   ) {
-    return '#d3212c'
+    return '#c2412d'
   }
 
   if (normalizedStatus.includes('full')) {
-    return '#069c56'
+    return '#2f7d64'
   }
 
   if (normalizedStatus.includes('partial')) {
-    return '#ff980e'
+    return '#d49a1a'
   }
 
   if (normalizedStatus.includes('none')) {
-    return '#2563eb'
+    return '#2a7f86'
   }
 
   if (normalizedStatus.includes('compliance') || normalizedStatus.includes('compliant')) {
-    return '#069c56'
+    return '#2f7d64'
   }
 
   return fallbackPalette[index % fallbackPalette.length]
@@ -82,11 +82,11 @@ export default function StatusDonutChart({ statusCounts, selectedStatus, onStatu
             total: {
               show: true,
               label: 'Records',
-              color: '#71717a',
+              color: '#5b6573',
               fontSize: '11px',
               fontWeight: 500,
             },
-            value: { color: '#18181b', fontSize: '20px', fontWeight: 600 },
+            value: { color: '#1b2430', fontSize: '20px', fontWeight: 600 },
           },
         },
       },
@@ -97,7 +97,7 @@ export default function StatusDonutChart({ statusCounts, selectedStatus, onStatu
     <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-sm font-semibold tracking-tightish text-ink">Status Distribution</h3>
+          <h3 className="text-[15px] font-semibold text-ink">Status Distribution</h3>
           {selectedStatus ? (
             <p className="mt-1 text-xs font-medium text-civic-700">
               Filtering table by {selectedStatus}
@@ -108,7 +108,7 @@ export default function StatusDonutChart({ statusCounts, selectedStatus, onStatu
           <button
             type="button"
             onClick={() => onStatusSelect?.('')}
-            className="rounded-md border border-line px-2.5 py-1 text-xs font-medium text-ink-soft transition hover:bg-zinc-50 hover:text-ink"
+            className="rounded-md border border-line px-2.5 py-1 text-xs font-medium text-ink-soft transition hover:bg-surface-muted hover:text-ink"
           >
             Clear
           </button>

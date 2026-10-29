@@ -21,6 +21,7 @@ import {
 } from '../hooks/useSKFPDQueries'
 import { SKFPD_MAX_SCORE } from '../utils/skfpdAnalytics'
 import { applyCoverage, dataCoverage, getCoverageDefaults } from '../config/dataCoverage'
+import DashboardSkeleton from '../components/common/DashboardSkeleton'
 
 const coverage = dataCoverage.skfpd
 const coverageDefaults = getCoverageDefaults(coverage)
@@ -44,19 +45,14 @@ const normalizeText = (value) => (typeof value === 'string' ? value.trim().toLow
 const isHucProvinceOption = (value) => hucProvinceOptions.includes(normalizeText(value))
 
 function LoadingState() {
-  return (
-    <Card className="rounded-xl border border-line bg-white p-10 text-center shadow-none ring-0">
-      <div className="text-[13px] font-semibold uppercase tracking-[0.14em] text-civic-700">Loading SKFPD dashboard…</div>
-      <p className="mt-2 text-[13px] text-ink-muted">Fetching data…</p>
-    </Card>
-  )
+  return <DashboardSkeleton label="Loading SKFPD dashboard" />
 }
 
 function ErrorState({ message }) {
   return (
-    <Card className="rounded-xl border border-red-200 bg-red-50 p-10 text-center shadow-none ring-0">
-      <div className="text-[15px] font-semibold tracking-tightish text-red-900">Unable to load SKFPD data</div>
-      <p className="mt-2 text-[13px] text-red-700">{message}</p>
+    <Card className="rounded-xl border border-rose-200 bg-rose-50 p-10 text-center shadow-none ring-0">
+      <div className="text-[15px] font-semibold tracking-tightish text-rose-900">Unable to load SKFPD data</div>
+      <p className="mt-2 text-[13px] text-rose-800">{message}</p>
     </Card>
   )
 }
@@ -275,7 +271,7 @@ export default function SKFPDDashboard({ initialFilters }) {
       !dashboardError &&
       hasDashboardRecords ? (
         <>
-          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+          <section aria-label="Summary" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
             {(locationStats?.cards ?? []).map((card) => (
               <SummaryCard
                 key={card.title}

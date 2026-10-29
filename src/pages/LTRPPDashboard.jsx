@@ -22,6 +22,7 @@ import {
 } from '../hooks/useLTRPPQueries'
 import { LTRPP_MAX_SCORE } from '../utils/ltrppAnalytics'
 import { applyCoverage, dataCoverage, getCoverageDefaults } from '../config/dataCoverage'
+import DashboardSkeleton from '../components/common/DashboardSkeleton'
 
 const coverage = dataCoverage.ltrpp
 const coverageDefaults = getCoverageDefaults(coverage)
@@ -39,19 +40,14 @@ const ltrppStatusSeries = [
 ]
 
 function LoadingState() {
-  return (
-    <Card className="rounded-xl border border-line bg-white p-10 text-center shadow-none ring-0">
-      <div className="text-[13px] font-semibold uppercase tracking-[0.14em] text-civic-700">Loading LPTRPP dashboard…</div>
-      <p className="mt-2 text-[13px] text-ink-muted">Fetching route plan preparation records.</p>
-    </Card>
-  )
+  return <DashboardSkeleton label="Loading LPTRPP dashboard" />
 }
 
 function ErrorState({ message }) {
   return (
-    <Card className="rounded-xl border border-red-200 bg-red-50 p-10 text-center shadow-none ring-0">
-      <div className="text-[15px] font-semibold tracking-tightish text-red-900">Unable to load LPTRPP data</div>
-      <p className="mt-2 text-[13px] text-red-700">{message}</p>
+    <Card className="rounded-xl border border-rose-200 bg-rose-50 p-10 text-center shadow-none ring-0">
+      <div className="text-[15px] font-semibold tracking-tightish text-rose-900">Unable to load LPTRPP data</div>
+      <p className="mt-2 text-[13px] text-rose-800">{message}</p>
     </Card>
   )
 }
@@ -75,16 +71,16 @@ function RemarksPanel({ remarks, selectedLguPath }) {
   return (
     <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
       <div className="mb-3">
-        <h3 className="text-sm font-semibold tracking-tightish text-ink">Remarks</h3>
+        <h3 className="text-[15px] font-semibold text-ink">Remarks</h3>
         <p className="text-[13px] text-ink-muted">{selectedLguPath}</p>
       </div>
       <div className="space-y-3">
         {remarks.map((record) => (
           <div
             key={record.id}
-            className="rounded-lg border border-line bg-zinc-50/60 px-3 py-2"
+            className="rounded-lg border border-line bg-surface-muted/60 px-3 py-2"
           >
-            <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-muted">
+            <div className="text-[10px] font-semibold text-ink-muted">
               {record.year ?? 'N/A'} {record.quarter ? `Q${record.quarter}` : ''}
             </div>
             <p className="mt-1 text-sm leading-6 text-ink-soft">{record.remarks}</p>
@@ -266,7 +262,7 @@ export default function LTRPPDashboard({ initialFilters }) {
 
       {!isInitialDashboardLoading && !dashboardError && hasDashboardRecords ? (
         <>
-          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <section aria-label="Summary" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
             {(locationStats?.cards ?? []).map((card) => (
               <SummaryCard
                 key={card.title}
@@ -295,7 +291,7 @@ export default function LTRPPDashboard({ initialFilters }) {
               title={statusChartTitle}
               selectedFilter={selectedChartFilter}
               onFilterSelect={handleChartFilterChange}
-              colors={['#069c56', '#d3212c']}
+              colors={['#2f7d64', '#c2412d']}
             />
             <DocumentCompletionChart
               documents={documentCompletion}

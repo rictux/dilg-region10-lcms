@@ -20,6 +20,8 @@ import { applyCoverage, dataCoverage, getCoverageDefaults } from '../config/data
 import { useSGLGDashboard, useSGLGGeoOptions, useSGLGTable } from '../hooks/useSGLGQueries'
 import { getSGLGRecordLabel } from '../services/sglgService'
 import { SGLG_INDICATORS } from '../utils/sglgIndicators'
+import ComplianceMark from '../components/common/ComplianceMark'
+import DashboardSkeleton from '../components/common/DashboardSkeleton'
 
 const coverage = dataCoverage.sglg
 const coverageDefaults = getCoverageDefaults(coverage)
@@ -39,21 +41,19 @@ const badgeClassName =
   'border px-1.5 py-0.5 text-[11px] font-medium leading-4 shadow-none ring-1 ring-inset xl:px-2 xl:text-xs'
 
 const badgeColorClasses = {
-  green: '!border-[#069c56] !bg-[#069c56] !text-white !ring-[#069c56]/20',
-  red: '!border-[#d3212c] !bg-[#d3212c] !text-white !ring-[#d3212c]/20',
-  slate: '!border-slate-300 !bg-slate-50 !text-slate-700 !ring-slate-600/20',
+  green: '!border-civic-200 !bg-civic-50 !text-civic-800 !ring-0',
+  red: '!border-rose-200 !bg-rose-50 !text-rose-800 !ring-0',
+  slate: '!border-line !bg-surface-muted !text-ink-soft !ring-0',
 }
 
 function BinaryBadge({ value }) {
-  if (value === 1) {
-    return <Badge className={`${badgeClassName} ${badgeColorClasses.green}`}>Pass</Badge>
-  }
-
-  if (value === 0) {
-    return <Badge className={`${badgeClassName} ${badgeColorClasses.red}`}>Fail</Badge>
-  }
-
-  return <Badge className={`${badgeClassName} ${badgeColorClasses.slate}`}>N/A</Badge>
+  return (
+    <ComplianceMark
+      value={value === 1 ? true : value === 0 ? false : null}
+      yesLabel="Pass"
+      noLabel="Fail"
+    />
+  )
 }
 
 function RatingBadge({ value }) {
@@ -91,11 +91,11 @@ function formatAreaStatus(value) {
 
 function getAreaStatusClassName(value) {
   if (value === 1) {
-    return 'text-[#069c56]'
+    return 'text-civic-700'
   }
 
   if (value === 0) {
-    return 'text-[#d3212c]'
+    return 'text-rose-700'
   }
 
   return 'text-civic-900'
@@ -109,30 +109,25 @@ function getOverallRatingClassName(value) {
   const normalized = value?.toLowerCase()
 
   if (normalized === 'passed') {
-    return 'text-[#069c56]'
+    return 'text-civic-700'
   }
 
   if (normalized === 'failed') {
-    return 'text-[#d3212c]'
+    return 'text-rose-700'
   }
 
   return 'text-slate-900'
 }
 
 function LoadingState() {
-  return (
-    <Card className="rounded-xl border border-line bg-white p-10 text-center shadow-none ring-0">
-      <div className="text-[13px] font-semibold uppercase tracking-[0.14em] text-civic-700">Loading SGLG dashboard…</div>
-      <p className="mt-2 text-[13px] text-ink-muted">Fetching assessment records and indicators.</p>
-    </Card>
-  )
+  return <DashboardSkeleton label="Loading SGLG dashboard" />
 }
 
 function ErrorState({ message }) {
   return (
-    <Card className="rounded-xl border border-red-200 bg-red-50 p-10 text-center shadow-none ring-0">
-      <div className="text-[15px] font-semibold tracking-tightish text-red-900">Unable to load SGLG data</div>
-      <p className="mt-2 text-[13px] text-red-700">{message}</p>
+    <Card className="rounded-xl border border-rose-200 bg-rose-50 p-10 text-center shadow-none ring-0">
+      <div className="text-[15px] font-semibold tracking-tightish text-rose-900">Unable to load SGLG data</div>
+      <p className="mt-2 text-[13px] text-rose-800">{message}</p>
     </Card>
   )
 }
@@ -164,9 +159,9 @@ function SGLGRatingDonut({ statusCounts }) {
     labels,
     colors: labels.map((label) => {
       const normalized = label.toLowerCase()
-      if (normalized === 'passed') return '#069c56'
-      if (normalized === 'failed') return '#d3212c'
-      return '#64748b'
+      if (normalized === 'passed') return '#2f7d64'
+      if (normalized === 'failed') return '#c2412d'
+      return '#5f6b7a'
     }),
     legend: {
       position: 'bottom',
@@ -186,7 +181,7 @@ function SGLGRatingDonut({ statusCounts }) {
             total: {
               show: true,
               label: 'LGUs',
-              color: '#475569',
+              color: '#5b6573',
             },
           },
         },
@@ -196,7 +191,7 @@ function SGLGRatingDonut({ statusCounts }) {
 
   return (
     <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
-      <h3 className="text-sm font-semibold tracking-tightish text-ink">Overall Rating Distribution</h3>
+      <h3 className="text-[15px] font-semibold text-ink">Overall Rating Distribution</h3>
       <Chart options={options} series={series} type="donut" height={310} />
     </Card>
   )
@@ -233,7 +228,7 @@ function getRequirementMarkerColor(field) {
     return null
   }
 
-  return field.requirement.kind === 'pool' ? '#069c56' : '#d3212c'
+  return field.requirement.kind === 'pool' ? '#2f7d64' : '#c2412d'
 }
 
 function getRequirementNote(indicator, fields) {
@@ -349,7 +344,7 @@ function AreaStatusChart({ indicators, showPercentages, onAreaSelect }) {
           }
         : {},
     },
-    colors: ['#d3212c', '#2f7d64'],
+    colors: ['#c2412d', '#2f7d64'],
     grid: {
       show: false,
     },
@@ -375,7 +370,7 @@ function AreaStatusChart({ indicators, showPercentages, onAreaSelect }) {
       },
     },
     yaxis: {
-      labels: { style: { colors: '#475569', fontSize: '12px' } },
+      labels: { style: { colors: '#5b6573', fontSize: '12px' } },
     },
     annotations: {
       xaxis: [
@@ -401,9 +396,9 @@ function AreaStatusChart({ indicators, showPercentages, onAreaSelect }) {
         const totalLabel = showPercentages ? 'LGUs' : 'assessment value(s)'
 
         return `
-          <div style="padding: 10px 12px; font-size: 13px; color: #0f172a;">
+          <div style="padding: 10px 12px; font-size: 13px; color: #1b2430;">
             <div style="font-weight: 700;">${indicator.title}</div>
-            <div style="margin-top: 4px; color: #475569;">${isFail ? 'Fail' : 'Pass'}: ${valueLabel}</div>
+            <div style="margin-top: 4px; color: #5b6573;">${isFail ? 'Fail' : 'Pass'}: ${valueLabel}</div>
             <div style="margin-top: 8px; font-weight: 700;">${count} of ${indicator.total} ${totalLabel}</div>
           </div>
         `
@@ -414,7 +409,7 @@ function AreaStatusChart({ indicators, showPercentages, onAreaSelect }) {
   return (
     <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
       <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
-        <h3 className="text-sm font-semibold tracking-tightish text-ink">
+        <h3 className="text-[15px] font-semibold text-ink">
           {showPercentages ? '10 Governance LGU Passing Rate' : '10 Governance Areas Rating'}
         </h3>
         {onAreaSelect ? (
@@ -478,7 +473,7 @@ function SubIndicatorCard({ indicator, showPercentages }) {
           applyRequiredAxisMarkers(chartContext.el, showRequirements ? subIndicators : markerlessFields),
       },
     },
-    colors: ['#d3212c', '#2f7d64'],
+    colors: ['#c2412d', '#2f7d64'],
     grid: {
       show: false,
     },
@@ -504,7 +499,7 @@ function SubIndicatorCard({ indicator, showPercentages }) {
       labels: {
         minWidth: 122,
         maxWidth: 184,
-        style: { colors: '#475569', fontSize: '11px' },
+        style: { colors: '#5b6573', fontSize: '11px' },
       },
     },
     annotations: {
@@ -531,13 +526,13 @@ function SubIndicatorCard({ indicator, showPercentages }) {
         const totalLabel = showPercentages ? 'LGUs' : 'assessment value(s)'
         const requirement = field.requirement
         const requirementLine = showRequirements && requirement
-          ? `<div style="margin-top: 8px; color: #0369a1; font-weight: 700;">${getRequirementMarker(requirement)}: ${requirement.description}</div>`
+          ? `<div style="margin-top: 8px; color: #1f4e79; font-weight: 700;">${getRequirementMarker(requirement)}: ${requirement.description}</div>`
           : ''
 
         return `
-          <div style="padding: 10px 12px; font-size: 13px; color: #0f172a;">
+          <div style="padding: 10px 12px; font-size: 13px; color: #1b2430;">
             <div style="font-weight: 700;">${field.label}</div>
-            <div style="margin-top: 4px; color: #475569;">${isFail ? 'Fail' : 'Pass'}: ${valueLabel}</div>
+            <div style="margin-top: 4px; color: #5b6573;">${isFail ? 'Fail' : 'Pass'}: ${valueLabel}</div>
             <div style="margin-top: 8px; font-weight: 700;">${count} of ${field.total} ${totalLabel}</div>
             ${requirementLine}
           </div>
@@ -550,7 +545,7 @@ function SubIndicatorCard({ indicator, showPercentages }) {
     <Card id={`sglg-area-${indicator.key}`} className="scroll-mt-24 rounded-xl border border-line bg-white p-5 shadow-none ring-0">
       <div className="flex flex-col justify-between gap-2 border-b border-line pb-3 sm:flex-row sm:items-start">
         <div>
-          <h3 className="text-sm font-semibold tracking-tightish text-ink">{indicator.title}</h3>
+          <h3 className="text-[15px] font-semibold text-ink">{indicator.title}</h3>
           <p className="mt-1 text-xs text-ink-muted">
             Indicators: {subIndicatorsPassed} passed, {subIndicatorsFailed} failed
           </p>
@@ -562,7 +557,7 @@ function SubIndicatorCard({ indicator, showPercentages }) {
         </div>
         <div className="rounded-lg border border-civic-100 bg-civic-50 px-3 py-1.5 text-right">
           {showPercentages ? (
-            <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-civic-700">
+            <div className="text-[11px] font-semibold text-civic-700">
               LGU Passing Rate
             </div>
           ) : null}
@@ -601,7 +596,7 @@ function SGLGTable({
     <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
       <div className="mb-4 flex flex-col justify-between gap-2 md:flex-row md:items-center">
         <div>
-          <h2 className="text-sm font-semibold tracking-tightish text-ink">SGLG Detailed Records</h2>
+          <h2 className="text-[15px] font-semibold text-ink">SGLG Detailed Records</h2>
           <p className="mt-0.5 text-[13px] text-ink-muted">
             {activeFilterLabel
               ? `Filtered by ${activeFilterLabel}`
@@ -613,7 +608,7 @@ function SGLGTable({
             <button
               type="button"
               onClick={onClearFilter}
-              className="rounded-md border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:bg-zinc-50 hover:text-ink"
+              className="rounded-md border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:bg-surface-muted hover:text-ink"
             >
               Clear filter
             </button>
@@ -696,7 +691,7 @@ function SGLGTable({
             type="button"
             onClick={() => onPageChange?.(Math.max(0, page - 1))}
             disabled={page === 0}
-            className="rounded-md border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:bg-zinc-50 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-md border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:bg-surface-muted hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
           >
             Previous
           </button>
@@ -704,7 +699,7 @@ function SGLGTable({
             type="button"
             onClick={() => onPageChange?.(Math.min(totalPages - 1, page + 1))}
             disabled={page >= totalPages - 1}
-            className="rounded-md border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:bg-zinc-50 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-md border border-line px-3 py-1.5 text-sm font-medium text-ink-soft transition hover:bg-surface-muted hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
           >
             Next
           </button>
@@ -893,7 +888,7 @@ export default function SGLGDashboard({ initialFilters }) {
 
       {!isLoading && !dashboardError && dashboard?.totalRecords ? (
         <>
-          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <section aria-label="Summary" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
             {showPercentages ? (
               <>
                 <SummaryCard title="Population" value={formatNumber(dashboard.totalPopulation)} />
@@ -926,7 +921,7 @@ export default function SGLGDashboard({ initialFilters }) {
                 selectedFilter={selectedChartFilter}
                 highlightedLocation={highlightedStatusLocation}
                 onFilterSelect={handleChartFilterChange}
-                colors={['#069c56', '#d3212c']}
+                colors={['#2f7d64', '#c2412d']}
               />
             ) : null}
             <AreaStatusChart

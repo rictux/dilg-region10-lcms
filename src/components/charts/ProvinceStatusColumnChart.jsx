@@ -2,7 +2,7 @@ import Chart from 'react-apexcharts'
 import { Card } from '@tremor/react'
 import ChartEmptyState from './ChartEmptyState'
 
-const defaultColors = ['#069c56', '#ff980e', '#d3212c']
+const defaultColors = ['#2f7d64', '#d49a1a', '#c2412d']
 
 export default function ProvinceStatusColumnChart({
   data,
@@ -109,17 +109,17 @@ export default function ProvinceStatusColumnChart({
       enabled: true,
       formatter: (value) => (value > 0 ? value.toLocaleString() : ''),
       offsetY: -18,
-      style: { colors: ['#18181b'], fontSize: '11px', fontWeight: 600 },
+      style: { colors: ['#1b2430'], fontSize: '11px', fontWeight: 600 },
     },
     xaxis: {
       categories: locations,
       labels: {
         rotate: -35,
         trim: true,
-        style: { colors: '#71717a', fontSize: '11px' },
+        style: { colors: '#5b6573', fontSize: '11px' },
       },
-      axisBorder: { color: '#e4e4e7' },
-      axisTicks: { color: '#e4e4e7' },
+      axisBorder: { color: '#e1e5de' },
+      axisTicks: { color: '#e1e5de' },
     },
     yaxis: {
       min: 0,
@@ -143,7 +143,7 @@ export default function ProvinceStatusColumnChart({
     <Card className="rounded-xl border border-line bg-white p-5 shadow-none ring-0">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-sm font-semibold tracking-tightish text-ink">{title}</h3>
+          <h3 className="text-[15px] font-semibold text-ink">{title}</h3>
           {selectedFilter?.locationLabel && selectedFilter?.statusLabel ? (
             <p className="mt-1 text-xs font-medium text-civic-700">
               Filtering records below by {selectedFilter.statusLabel} in {selectedFilter.locationLabel}
@@ -154,7 +154,7 @@ export default function ProvinceStatusColumnChart({
           <button
             type="button"
             onClick={() => onFilterSelect?.({ province: '', city: '', locationLabel: '', status: '', statusLabel: '' })}
-            className="rounded-md border border-line px-2.5 py-1 text-xs font-medium text-ink-soft transition hover:bg-zinc-50 hover:text-ink"
+            className="rounded-md border border-line px-2.5 py-1 text-xs font-medium text-ink-soft transition hover:bg-surface-muted hover:text-ink"
           >
             Clear
           </button>

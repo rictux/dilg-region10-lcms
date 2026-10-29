@@ -1,3 +1,3 @@
-export default function Skeleton({ className = '' }) {
-  return <div aria-hidden className={`animate-pulse rounded-md bg-zinc-100 ${className}`} />
+export default function Skeleton({ className = '', style }) {
+  return <div aria-hidden style={style} className={`animate-pulse rounded-md bg-surface-sunken ${className}`} />
 }
